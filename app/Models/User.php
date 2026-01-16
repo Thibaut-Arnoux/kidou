@@ -27,10 +27,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  */
 final class User extends Authenticatable implements MustVerifyEmail
 {
-    /**
-     * @use HasFactory<UserFactory>
-     */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory;
+
+    use Notifiable;
+    use TwoFactorAuthenticatable;
 
     /**
      * @var list<string>

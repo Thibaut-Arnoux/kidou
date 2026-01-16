@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "open-southeners.laravel-pint",
+        "swordev.phpstan",
+        "xdebug.php-debug",
+        "ms-azuretools.vscode-docker",
+        "vivaxy.vscode-conventional-commits",
+    ]
+}
