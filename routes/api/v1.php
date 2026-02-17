@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\MilkGoalController;
+use App\Http\Controllers\Api\V1\MilkMeasureController;
+use App\Http\Middleware\InjectDemoBaby;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,4 +16,10 @@ Route::get('/health', fn (): JsonResponse => response()->json([
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request): mixed => $request->user())->name('api.v1.user');
+});
+
+// TODO: add auth:sanctum middleware once authorization is in place
+Route::middleware(InjectDemoBaby::class)->group(function (): void {
+    Route::apiResource('milk-goals', MilkGoalController::class);
+    Route::apiResource('milk-goals.measures', MilkMeasureController::class)->scoped();
 });

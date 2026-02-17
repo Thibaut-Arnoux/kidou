@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Resources;
+
+use App\Models\MilkMeasure;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin MilkMeasure */
+final class MilkMeasureResource extends JsonResource
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'value' => $this->value,
+            'measured_at' => $this->measured_at->toIso8601ZuluString(),
+            'created_at' => $this->created_at->toIso8601ZuluString(),
+            'updated_at' => $this->updated_at->toIso8601ZuluString(),
+        ];
+    }
+}
