@@ -16,7 +16,7 @@ final class StoreMilkGoalRequest extends FormRequest
     public function rules(): array
     {
         /** @var Baby $baby */
-        $baby = app(Baby::class);
+        $baby = resolve(Baby::class);
 
         return [
             'uuid' => ['sometimes', 'uuid', 'unique:milk_goals,uuid'],

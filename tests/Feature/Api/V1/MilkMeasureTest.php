@@ -20,7 +20,7 @@ beforeEach(function (): void {
 it('returns list of measures for a goal', function (): void {
     MilkMeasure::factory()->for($this->goal, 'milkGoal')->create(['value' => 120]);
 
-    $this->getJson("/api/v1/milk-goals/{$this->goal->uuid}/measures")
+    $this->getJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid))
         ->assertSuccessful()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.value', 120);
@@ -29,7 +29,7 @@ it('returns list of measures for a goal', function (): void {
 // --- Store ---
 
 it('creates a measure under a goal', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 120,
         'measured_at' => '2026-02-15T10:00:00Z',
     ])
@@ -47,7 +47,7 @@ it('creates a measure under a goal', function (): void {
 it('stores a measure with a frontend-provided uuid', function (): void {
     $uuid = (string) Str::uuid();
 
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'uuid' => $uuid,
         'value' => 120,
         'measured_at' => '2026-02-15T10:00:00Z',
@@ -59,7 +59,7 @@ it('stores a measure with a frontend-provided uuid', function (): void {
 });
 
 it('auto-generates a uuid when none is provided', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 120,
         'measured_at' => '2026-02-15T10:00:00Z',
     ])
@@ -70,7 +70,7 @@ it('auto-generates a uuid when none is provided', function (): void {
 it('rejects a duplicate uuid when storing measure', function (): void {
     $existing = MilkMeasure::factory()->for($this->goal, 'milkGoal')->create();
 
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'uuid' => $existing->uuid,
         'value' => 120,
         'measured_at' => '2026-02-15T10:00:00Z',
@@ -80,7 +80,7 @@ it('rejects a duplicate uuid when storing measure', function (): void {
 });
 
 it('validates value is required when storing measure', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'measured_at' => '2026-02-15T10:00:00Z',
     ])
         ->assertUnprocessable()
@@ -88,7 +88,7 @@ it('validates value is required when storing measure', function (): void {
 });
 
 it('validates value must be a positive integer when storing measure', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 0,
         'measured_at' => '2026-02-15T10:00:00Z',
     ])
@@ -97,7 +97,7 @@ it('validates value must be a positive integer when storing measure', function (
 });
 
 it('validates measured_at is required when storing measure', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 120,
     ])
         ->assertUnprocessable()
@@ -105,7 +105,7 @@ it('validates measured_at is required when storing measure', function (): void {
 });
 
 it('validates measured_at must be ISO 8601 UTC format when storing measure', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 120,
         'measured_at' => 'not-a-date',
     ])
@@ -114,7 +114,7 @@ it('validates measured_at must be ISO 8601 UTC format when storing measure', fun
 });
 
 it('rejects measured_at without Zulu suffix when storing measure', function (): void {
-    $this->postJson("/api/v1/milk-goals/{$this->goal->uuid}/measures", [
+    $this->postJson(sprintf('/api/v1/milk-goals/%s/measures', $this->goal->uuid), [
         'value' => 120,
         'measured_at' => '2026-02-15 10:00:00',
     ])
@@ -127,7 +127,7 @@ it('rejects measured_at without Zulu suffix when storing measure', function (): 
 it('returns a single measure', function (): void {
     $measure = MilkMeasure::factory()->for($this->goal, 'milkGoal')->create(['value' => 150]);
 
-    $this->getJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}")
+    $this->getJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid))
         ->assertSuccessful()
         ->assertJsonPath('data.value', 150);
 });
@@ -136,7 +136,7 @@ it('returns 404 for measure belonging to another goal (scoped binding)', functio
     $otherGoal = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-16']);
     $measure = MilkMeasure::factory()->for($otherGoal, 'milkGoal')->create();
 
-    $this->getJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}")
+    $this->getJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid))
         ->assertNotFound();
 });
 
@@ -145,7 +145,7 @@ it('returns 404 for measure belonging to another goal (scoped binding)', functio
 it('updates a measure value', function (): void {
     $measure = MilkMeasure::factory()->for($this->goal, 'milkGoal')->create(['value' => 120]);
 
-    $this->putJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}", [
+    $this->putJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid), [
         'value' => 200,
     ])
         ->assertSuccessful()
@@ -157,7 +157,7 @@ it('updates a measure value', function (): void {
 it('validates value is required when updating measure', function (): void {
     $measure = MilkMeasure::factory()->for($this->goal, 'milkGoal')->create();
 
-    $this->putJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}", [])
+    $this->putJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid), [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['value']);
 });
@@ -167,7 +167,7 @@ it('validates value is required when updating measure', function (): void {
 it('deletes a measure', function (): void {
     $measure = MilkMeasure::factory()->for($this->goal, 'milkGoal')->create();
 
-    $this->deleteJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}")
+    $this->deleteJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid))
         ->assertNoContent();
 
     $this->assertDatabaseMissing('milk_measures', ['uuid' => $measure->uuid]);
@@ -179,6 +179,6 @@ it('cannot delete a measure from another goal (scoped binding)', function (): vo
     $otherGoal = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-16']);
     $measure = MilkMeasure::factory()->for($otherGoal, 'milkGoal')->create();
 
-    $this->deleteJson("/api/v1/milk-goals/{$this->goal->uuid}/measures/{$measure->uuid}")
+    $this->deleteJson(sprintf('/api/v1/milk-goals/%s/measures/%s', $this->goal->uuid, $measure->uuid))
         ->assertNotFound();
 });

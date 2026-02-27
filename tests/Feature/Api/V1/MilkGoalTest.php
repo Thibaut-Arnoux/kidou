@@ -114,7 +114,7 @@ it('validates date must be unique per baby when storing', function (): void {
 it('returns a single goal', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-15', 'goal' => 500]);
 
-    $this->getJson("/api/v1/milk-goals/{$goal->uuid}")
+    $this->getJson('/api/v1/milk-goals/'.$goal->uuid)
         ->assertSuccessful()
         ->assertJsonPath('data.date', '2026-02-15')
         ->assertJsonPath('data.goal', 500);
@@ -130,7 +130,7 @@ it('returns 404 for non-existent goal', function (): void {
 it('updates goal for a milk goal', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create(['goal' => 500]);
 
-    $this->putJson("/api/v1/milk-goals/{$goal->uuid}", ['goal' => 750])
+    $this->putJson('/api/v1/milk-goals/'.$goal->uuid, ['goal' => 750])
         ->assertSuccessful()
         ->assertJsonPath('data.goal', 750);
 
@@ -140,7 +140,7 @@ it('updates goal for a milk goal', function (): void {
 it('validates goal is required when updating', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create();
 
-    $this->putJson("/api/v1/milk-goals/{$goal->uuid}", [])
+    $this->putJson('/api/v1/milk-goals/'.$goal->uuid, [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['goal']);
 });
@@ -148,7 +148,7 @@ it('validates goal is required when updating', function (): void {
 it('validates goal must be a positive integer when updating', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create();
 
-    $this->putJson("/api/v1/milk-goals/{$goal->uuid}", ['goal' => 0])
+    $this->putJson('/api/v1/milk-goals/'.$goal->uuid, ['goal' => 0])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['goal']);
 });
@@ -158,7 +158,7 @@ it('validates goal must be a positive integer when updating', function (): void 
 it('deletes a goal', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create();
 
-    $this->deleteJson("/api/v1/milk-goals/{$goal->uuid}")
+    $this->deleteJson('/api/v1/milk-goals/'.$goal->uuid)
         ->assertNoContent();
 
     $this->assertDatabaseMissing('milk_goals', ['uuid' => $goal->uuid]);
@@ -168,7 +168,7 @@ it('cascade deletes measures when goal is deleted', function (): void {
     $goal = MilkGoal::factory()->for($this->baby)->create();
     $measure = MilkMeasure::factory()->for($goal, 'milkGoal')->create();
 
-    $this->deleteJson("/api/v1/milk-goals/{$goal->uuid}")
+    $this->deleteJson('/api/v1/milk-goals/'.$goal->uuid)
         ->assertNoContent();
 
     $this->assertDatabaseMissing('milk_goals', ['uuid' => $goal->uuid]);
