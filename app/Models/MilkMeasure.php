@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\MilkMeasureObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\MilkMeasureFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 /**
  * @property-read int $id
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
  * @property-read CarbonInterface $updated_at
  * @property-read MilkGoal $milkGoal
  */
+#[ObservedBy(MilkMeasureObserver::class)]
 final class MilkMeasure extends Model
 {
     /** @use HasFactory<MilkMeasureFactory> */
@@ -54,16 +56,5 @@ final class MilkMeasure extends Model
     public function milkGoal(): BelongsTo
     {
         return $this->belongsTo(MilkGoal::class);
-    }
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        self::creating(function (MilkMeasure $measure): void {
-            if (empty($measure->uuid)) {
-                $measure->uuid = (string) Str::uuid();
-            }
-        });
     }
 }

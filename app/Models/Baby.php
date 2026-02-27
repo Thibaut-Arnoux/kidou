@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\BabyObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\BabyFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * @property-read int $id
@@ -23,6 +24,7 @@ use Illuminate\Support\Str;
  * @property-read User $user
  * @property-read Collection<int, MilkGoal> $milkGoals
  */
+#[ObservedBy(BabyObserver::class)]
 final class Baby extends Model
 {
     /** @use HasFactory<BabyFactory> */
@@ -60,16 +62,5 @@ final class Baby extends Model
     public function milkGoals(): HasMany
     {
         return $this->hasMany(MilkGoal::class);
-    }
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        self::creating(function (Baby $baby): void {
-            if (empty($baby->uuid)) {
-                $baby->uuid = (string) Str::uuid();
-            }
-        });
     }
 }
