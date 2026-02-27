@@ -17,8 +17,8 @@ final class MilkMeasureResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'milk_goal_id' => $this->milk_goal_id,
+            'id' => $this->uuid,
+            'milk_goal_id' => $this->milkGoal->uuid,
             'value' => $this->value,
             'measured_at' => $this->measured_at->toIso8601ZuluString(),
             'created_at' => $this->created_at->toIso8601ZuluString(),

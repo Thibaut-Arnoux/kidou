@@ -6,14 +6,15 @@ namespace App\Models;
 
 use Carbon\CarbonInterface;
 use Database\Factories\MilkMeasureFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 /**
- * @property-read string $id
- * @property-read string $milk_goal_id
+ * @property-read int $id
+ * @property-read string $uuid
+ * @property-read int $milk_goal_id
  * @property int $value
  * @property CarbonInterface $measured_at
  * @property-read CarbonInterface $created_at
@@ -25,7 +26,13 @@ final class MilkMeasure extends Model
     /** @use HasFactory<MilkMeasureFactory> */
     use HasFactory;
 
-    use HasUuids;
+    /** @var list<string> */
+    protected $with = ['milkGoal'];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @return array<string, string>
@@ -33,7 +40,7 @@ final class MilkMeasure extends Model
     public function casts(): array
     {
         return [
-            'milk_goal_id' => 'string',
+            'milk_goal_id' => 'integer',
             'value' => 'integer',
             'measured_at' => 'datetime',
             'created_at' => 'datetime',
@@ -47,5 +54,16 @@ final class MilkMeasure extends Model
     public function milkGoal(): BelongsTo
     {
         return $this->belongsTo(MilkGoal::class);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        self::creating(function (MilkMeasure $measure): void {
+            if (empty($measure->uuid)) {
+                $measure->uuid = (string) Str::uuid();
+            }
+        });
     }
 }

@@ -17,7 +17,7 @@ final class MilkGoalResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->uuid,
             'date' => $this->date->format('Y-m-d'),
             'goal' => $this->goal,
             'created_at' => $this->created_at->toIso8601ZuluString(),

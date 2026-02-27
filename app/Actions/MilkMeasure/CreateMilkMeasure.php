@@ -10,12 +10,13 @@ use Carbon\CarbonInterface;
 
 final readonly class CreateMilkMeasure
 {
-    public function handle(MilkGoal $milkGoal, int $value, CarbonInterface $measuredAt): MilkMeasure
+    public function handle(MilkGoal $milkGoal, int $value, CarbonInterface $measuredAt, ?string $uuid = null): MilkMeasure
     {
         /** @var MilkMeasure */
         return $milkGoal->measures()->create([
             'value' => $value,
             'measured_at' => $measuredAt,
+            ...($uuid !== null ? ['uuid' => $uuid] : []),
         ]);
     }
 }

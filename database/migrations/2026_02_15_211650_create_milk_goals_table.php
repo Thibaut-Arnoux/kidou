@@ -11,8 +11,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('milk_goals', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('baby_id')->constrained()->cascadeOnDelete();
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('baby_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->unsignedInteger('goal');
             $table->timestamps();

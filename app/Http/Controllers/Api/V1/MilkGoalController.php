@@ -33,7 +33,10 @@ final readonly class MilkGoalController
         /** @var int $goal */
         $goal = $request->validated('goal');
 
-        $milkGoal = $action->handle($baby, $date, $goal);
+        /** @var ?string $uuid */
+        $uuid = $request->validated('uuid');
+
+        $milkGoal = $action->handle($baby, $date, $goal, $uuid);
 
         return MilkGoalResource::make($milkGoal)
             ->response()

@@ -7,15 +7,16 @@ namespace App\Models;
 use Carbon\CarbonInterface;
 use Database\Factories\MilkGoalFactory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 /**
- * @property-read string $id
- * @property-read string $baby_id
+ * @property-read int $id
+ * @property-read string $uuid
+ * @property-read int $baby_id
  * @property-read CarbonInterface $date
  * @property int $goal
  * @property-read CarbonInterface $created_at
@@ -28,7 +29,10 @@ final class MilkGoal extends Model
     /** @use HasFactory<MilkGoalFactory> */
     use HasFactory;
 
-    use HasUuids;
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @return array<string, string>
@@ -36,7 +40,7 @@ final class MilkGoal extends Model
     public function casts(): array
     {
         return [
-            'baby_id' => 'string',
+            'baby_id' => 'integer',
             'date' => 'date:Y-m-d',
             'goal' => 'integer',
             'created_at' => 'datetime',
@@ -58,5 +62,16 @@ final class MilkGoal extends Model
     public function measures(): HasMany
     {
         return $this->hasMany(MilkMeasure::class);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        self::creating(function (MilkGoal $milkGoal): void {
+            if (empty($milkGoal->uuid)) {
+                $milkGoal->uuid = (string) Str::uuid();
+            }
+        });
     }
 }

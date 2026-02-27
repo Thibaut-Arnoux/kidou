@@ -34,7 +34,10 @@ final readonly class MilkMeasureController
         /** @var string $measuredAt */
         $measuredAt = $request->validated('measured_at');
 
-        $measure = $action->handle($milkGoal, $value, Date::parse($measuredAt));
+        /** @var ?string $uuid */
+        $uuid = $request->validated('uuid');
+
+        $measure = $action->handle($milkGoal, $value, Date::parse($measuredAt), $uuid);
 
         return MilkMeasureResource::make($measure)
             ->response()

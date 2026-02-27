@@ -19,6 +19,7 @@ final class StoreMilkGoalRequest extends FormRequest
         $baby = app(Baby::class);
 
         return [
+            'uuid' => ['sometimes', 'uuid', 'unique:milk_goals,uuid'],
             'date' => ['required', 'date_format:Y-m-d', Rule::unique('milk_goals')->where('baby_id', $baby->id)],
             'goal' => ['required', 'integer', 'min:1'],
         ];
