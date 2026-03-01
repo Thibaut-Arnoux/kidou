@@ -39,7 +39,7 @@ it('rejects day as period', function (): void {
 it('returns consistent envelope for all periods', function (string $period): void {
     Date::setTestNow('2026-02-24 12:00:00');
 
-    $this->getJson("/api/v1/milk-activity?period={$period}")
+    $this->getJson('/api/v1/milk-activity?period='.$period)
         ->assertSuccessful()
         ->assertJsonStructure([
             'data' => [['date', 'measure_value', 'measure_count', 'goal_value']],

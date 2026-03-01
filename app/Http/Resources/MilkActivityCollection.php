@@ -11,16 +11,11 @@ use Illuminate\Support\Collection;
 
 final class MilkActivityCollection extends ResourceCollection
 {
-    /** @var Collection<int, TrendItem> */
-    private readonly Collection $trends;
-
     /**
      * @param  Collection<int, TrendItem>  $trends
      */
-    public function __construct(Collection $trends)
+    public function __construct(private readonly Collection $trends)
     {
-        $this->trends = $trends;
-
         parent::__construct($this->trends);
     }
 
