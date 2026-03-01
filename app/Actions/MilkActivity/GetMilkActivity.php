@@ -26,7 +26,7 @@ final readonly class GetMilkActivity
             'week' => [Date::now()->subWeek(), Date::now()],
             'month' => [Date::now()->subMonth(), Date::now()],
             'year' => [Date::now()->subYear(), Date::now()],
-            default => throw new InvalidArgumentException("Invalid period: {$period}"),
+            default => throw new InvalidArgumentException('Invalid period: '.$period),
         };
 
         $baseQuery = MilkMeasure::query()
