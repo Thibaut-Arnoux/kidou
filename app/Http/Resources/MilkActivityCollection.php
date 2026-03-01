@@ -24,12 +24,12 @@ final class MilkActivityCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->trends->map(fn (TrendItem $item): array => [
+        return array_values($this->trends->map(fn (TrendItem $item): array => [
             'date' => $item->date,
             'measure_value' => $item->measureValue,
             'measure_count' => $item->measureCount,
             'goal_value' => $item->goalValue,
-        ])->all();
+        ])->all());
     }
 
     /**

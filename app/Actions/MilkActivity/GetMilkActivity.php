@@ -11,6 +11,7 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
+use InvalidArgumentException;
 
 final readonly class GetMilkActivity
 {
@@ -25,42 +26,54 @@ final readonly class GetMilkActivity
             'week' => [Date::now()->subWeek(), Date::now()],
             'month' => [Date::now()->subMonth(), Date::now()],
             'year' => [Date::now()->subYear(), Date::now()],
+            default => throw new InvalidArgumentException("Invalid period: {$period}"),
         };
 
         $baseQuery = MilkMeasure::query()
             ->whereIn('milk_goal_id', $milkGoalIds)
             ->without('milkGoal');
 
-        // Query 1: sum of measure values per day
+        /** @var Collection<int, TrendValue> $sums */
         $sums = Trend::query(clone $baseQuery)
             ->dateColumn('measured_at')
             ->between(start: $from, end: $to)
             ->perDay()
             ->sum('value');
 
-        // Query 2: count of measures per day
+        /** @var Collection<int, TrendValue> $counts */
         $counts = Trend::query(clone $baseQuery)
             ->dateColumn('measured_at')
             ->between(start: $from, end: $to)
             ->perDay()
             ->count();
 
-        // Query 3: goal value per day
+        /** @var Collection<int, TrendValue> $goals */
         $goals = Trend::query(MilkGoal::query()->whereIn('id', $milkGoalIds))
             ->dateColumn('date')
             ->between(start: $from, end: $to)
             ->perDay()
             ->sum('goal');
 
-        // Zip into TrendItem collection keyed by date
+        /** @var Collection<string, TrendValue> $countsKeyed */
         $countsKeyed = $counts->keyBy(fn (TrendValue $v): string => $v->date);
+        /** @var Collection<string, TrendValue> $goalsKeyed */
         $goalsKeyed = $goals->keyBy(fn (TrendValue $v): string => $v->date);
 
-        return $sums->map(fn (TrendValue $v): TrendItem => new TrendItem(
-            date: $v->date,
-            measureValue: $v->aggregate,
-            measureCount: $countsKeyed->get($v->date)->aggregate,
-            goalValue: $goalsKeyed->get($v->date)->aggregate,
-        ))->values();
+        return $sums->map(function (TrendValue $v) use ($countsKeyed, $goalsKeyed): TrendItem {
+            $measureValue = $v->aggregate;
+            $measureCount = $countsKeyed->get($v->date)?->aggregate;
+            $goalValue = $goalsKeyed->get($v->date)?->aggregate;
+
+            assert(is_int($measureValue));
+            assert(is_int($measureCount));
+            assert(is_int($goalValue));
+
+            return new TrendItem(
+                date: $v->date,
+                measureValue: $measureValue,
+                measureCount: $measureCount,
+                goalValue: $goalValue,
+            );
+        })->values();
     }
 }
