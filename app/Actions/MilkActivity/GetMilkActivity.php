@@ -22,10 +22,12 @@ final readonly class GetMilkActivity
     {
         $milkGoalIds = $baby->milkGoals()->select('id');
 
+        $endOfDay = Date::now()->endOfDay();
+
         [$from, $to] = match ($period) {
-            'week' => [Date::now()->subWeek(), Date::now()],
-            'month' => [Date::now()->subMonth(), Date::now()],
-            'year' => [Date::now()->subYear(), Date::now()],
+            'week' => [Date::now()->subWeek()->startOfDay(), $endOfDay],
+            'month' => [Date::now()->subMonth()->startOfDay(), $endOfDay],
+            'year' => [Date::now()->subYear()->startOfDay(), $endOfDay],
             default => throw new InvalidArgumentException('Invalid period: '.$period),
         };
 
