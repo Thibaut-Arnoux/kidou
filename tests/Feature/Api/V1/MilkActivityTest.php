@@ -104,17 +104,18 @@ it('returns aggregated daily data for month period', function (): void {
 
 // --- Year period ---
 
-it('returns aggregated daily data for year period', function (): void {
+it('returns aggregated monthly data for year period', function (): void {
     Date::setTestNow('2026-02-24 12:00:00');
 
-    $goal = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-01-15', 'goal' => 500]);
+    $goalJan15 = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-01-15', 'goal' => 500]);
+    $goalJan20 = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-01-20', 'goal' => 300]);
 
-    MilkMeasure::factory()->for($goal, 'milkGoal')->create([
+    MilkMeasure::factory()->for($goalJan15, 'milkGoal')->create([
         'value' => 300,
         'measured_at' => '2026-01-15 10:00:00',
     ]);
 
-    MilkMeasure::factory()->for($goal, 'milkGoal')->create([
+    MilkMeasure::factory()->for($goalJan20, 'milkGoal')->create([
         'value' => 150,
         'measured_at' => '2026-01-20 10:00:00',
     ]);
@@ -123,12 +124,14 @@ it('returns aggregated daily data for year period', function (): void {
         ->assertSuccessful();
 
     $data = $response->json('data');
-    $jan15 = collect($data)->firstWhere('date', '2026-01-15');
 
-    expect($jan15)->not->toBeNull();
-    expect($jan15['measure_value'])->toBe(300);
-    expect($jan15['measure_count'])->toBe(1);
-    expect($jan15['goal_value'])->toBe(500);
+    // Year period aggregates per month — date is normalized to first of month
+    $jan = collect($data)->firstWhere('date', '2026-01-01');
+
+    expect($jan)->not->toBeNull();
+    expect($jan['measure_value'])->toBe(450);
+    expect($jan['measure_count'])->toBe(2);
+    expect($jan['goal_value'])->toBe(800);
 
     $response->assertJsonPath('meta.measure_total', 450);
     $response->assertJsonPath('meta.measure_total_count', 2);

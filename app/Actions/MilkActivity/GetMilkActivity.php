@@ -35,25 +35,28 @@ final readonly class GetMilkActivity
             ->whereIn('milk_goal_id', $milkGoalIds)
             ->without('milkGoal');
 
+        $interval = $period === 'year' ? 'month' : 'day';
+
         /** @var Collection<int, TrendValue> $sums */
         $sums = Trend::query(clone $baseQuery)
             ->dateColumn('measured_at')
             ->between(start: $from, end: $to)
-            ->perDay()
+            ->interval($interval)
             ->sum('value');
 
         /** @var Collection<int, TrendValue> $counts */
         $counts = Trend::query(clone $baseQuery)
             ->dateColumn('measured_at')
             ->between(start: $from, end: $to)
-            ->perDay()
+            ->interval($interval)
             ->count();
 
         /** @var Collection<int, TrendValue> $goals */
         $goals = Trend::query(MilkGoal::query()->whereIn('id', $milkGoalIds))
             ->dateColumn('date')
+            ->dateAlias('period')
             ->between(start: $from, end: $to)
-            ->perDay()
+            ->interval($interval)
             ->sum('goal');
 
         /** @var Collection<string, TrendValue> $countsKeyed */
