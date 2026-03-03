@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\MilkActivity;
 
+use App\Enums\MilkActivity\Period;
 use App\Models\Baby;
 use App\Models\MilkGoal;
 use App\Models\MilkMeasure;
@@ -11,45 +12,40 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
-use InvalidArgumentException;
 
 final readonly class GetMilkActivity
 {
     /**
      * @return Collection<int, TrendItem>
      */
-    public function handle(Baby $baby, string $period): Collection
+    public function handle(Baby $baby, Period $period): Collection
     {
         $milkGoalIds = $baby->milkGoals()->select('id');
 
         $endOfDay = Date::now()->endOfDay();
 
         [$from, $to] = match ($period) {
-            'week' => [Date::now()->subWeek()->startOfDay(), $endOfDay],
-            'month' => [Date::now()->subMonth()->startOfDay(), $endOfDay],
-            'year' => [Date::now()->subYear()->startOfDay(), $endOfDay],
-            default => throw new InvalidArgumentException('Invalid period: '.$period),
+            Period::Week => [Date::now()->subWeek()->addDay()->startOfDay(), $endOfDay],
+            Period::Month => [Date::now()->subMonth()->addDay()->startOfDay(), $endOfDay],
+            Period::Year => [Date::now()->subYear()->addMonth()->startOfMonth()->startOfDay(), $endOfDay],
         };
 
-        $baseQuery = MilkMeasure::query()
-            ->whereIn('milk_goal_id', $milkGoalIds)
-            ->without('milkGoal');
+        $interval = $period->interval();
 
-        $interval = $period === 'year' ? 'month' : 'day';
+        $measureTrend = fn (): Trend => Trend::query(
+            MilkMeasure::query()
+                ->whereIn('milk_goal_id', $milkGoalIds)
+                ->without('milkGoal')
+        )
+            ->dateColumn('measured_at')
+            ->between(start: $from, end: $to)
+            ->interval($interval);
 
         /** @var Collection<int, TrendValue> $sums */
-        $sums = Trend::query(clone $baseQuery)
-            ->dateColumn('measured_at')
-            ->between(start: $from, end: $to)
-            ->interval($interval)
-            ->sum('value');
+        $sums = $measureTrend()->sum('value');
 
         /** @var Collection<int, TrendValue> $counts */
-        $counts = Trend::query(clone $baseQuery)
-            ->dateColumn('measured_at')
-            ->between(start: $from, end: $to)
-            ->interval($interval)
-            ->count();
+        $counts = $measureTrend()->count();
 
         /** @var Collection<int, TrendValue> $goals */
         $goals = Trend::query(MilkGoal::query()->whereIn('id', $milkGoalIds))
@@ -65,13 +61,12 @@ final readonly class GetMilkActivity
         $goalsKeyed = $goals->keyBy(fn (TrendValue $v): string => $v->date);
 
         return $sums->map(function (TrendValue $v) use ($countsKeyed, $goalsKeyed): TrendItem {
+            /** @var int $measureValue */
             $measureValue = $v->aggregate;
-            $measureCount = $countsKeyed->get($v->date)?->aggregate;
-            $goalValue = $goalsKeyed->get($v->date)?->aggregate;
-
-            assert(is_int($measureValue));
-            assert(is_int($measureCount));
-            assert(is_int($goalValue));
+            /** @var int $measureCount */
+            $measureCount = $countsKeyed->get($v->date)->aggregate ?? 0;
+            /** @var int $goalValue */
+            $goalValue = $goalsKeyed->get($v->date)->aggregate ?? 0;
 
             return new TrendItem(
                 date: $v->date,
