@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\MilkActivity;
+namespace App\ValueObjects\MilkActivity;
 
 final readonly class TrendItem
 {

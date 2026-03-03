@@ -8,6 +8,7 @@ use App\Enums\MilkActivity\Period;
 use App\Models\Baby;
 use App\Models\MilkGoal;
 use App\Models\MilkMeasure;
+use App\ValueObjects\MilkActivity\TrendItem;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Collection;

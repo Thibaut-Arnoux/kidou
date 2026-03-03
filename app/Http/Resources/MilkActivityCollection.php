@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Actions\MilkActivity\TrendItem;
+use App\ValueObjects\MilkActivity\TrendItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 final class MilkActivityCollection extends ResourceCollection
 {
@@ -25,7 +26,7 @@ final class MilkActivityCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return array_values($this->trends->map(fn (TrendItem $item): array => [
-            'date' => \Illuminate\Support\Facades\Date::parse($item->date)->format('Y-m-d'),
+            'date' => Date::parse($item->date)->format('Y-m-d'),
             'measure_value' => $item->measureValue,
             'measure_count' => $item->measureCount,
             'goal_value' => $item->goalValue,
