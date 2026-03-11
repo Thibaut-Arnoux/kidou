@@ -51,7 +51,7 @@ A gamification feature for Kidou that tracks developmental milestones for babies
 
 ### Category (`final class`)
 
-- `#[ObservedBy(CategoryObserver::class)]`
+- `#[ObservedBy([CategoryObserver::class])]`
 - `hasMany(Achievement)`
 - Uses UUID as route key
 - `$fillable`: `name`, `slug`, `is_custom`
@@ -59,18 +59,19 @@ A gamification feature for Kidou that tracks developmental milestones for babies
 
 ### Achievement (`final class`)
 
-- `#[ObservedBy(AchievementObserver::class)]`
+- `#[ObservedBy([AchievementObserver::class])]`
 - `belongsTo(Category)`
 - `belongsTo(User)` (nullable — only for custom achievements)
 - `belongsToMany(Baby)` via `baby_achievement` pivot, using `BabyAchievement` custom pivot model
 - Uses UUID as route key
 - `$fillable`: `category_id`, `user_id`, `name`, `description`, `expected_age_min_months`, `expected_age_max_months`
-- Scope `predefined()` — where `user_id` is null
-- Scope `customForUser(User $user)` — where `user_id` = user id
+- Scopes use the `#[Scope]` attribute (Laravel 12 convention):
+  - `predefined()` — where `user_id` is null
+  - `customForUser(User $user)` — where `user_id` = user id
 
 ### BabyAchievement (`final class`, custom Pivot model)
 
-- `#[ObservedBy(BabyAchievementObserver::class)]`
+- `#[ObservedBy([BabyAchievementObserver::class])]`
 - Extends `Illuminate\Database\Eloquent\Relations\Pivot`
 - `$incrementing = true`
 - Casts: `achieved_at` as `datetime`
@@ -88,6 +89,10 @@ public function achievements(): BelongsToMany
         ->withTimestamps();
 }
 ```
+
+### AchievementResource note
+
+Since the pivot is aliased as `link` (via `->as('link')`), use `whenPivotLoadedAs('link', BabyAchievement::class, ...)` in the resource to conditionally include link data.
 
 ## API Endpoints
 
