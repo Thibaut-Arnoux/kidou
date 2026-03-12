@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read CarbonInterface $updated_at
  * @property-read User $user
  * @property-read Collection<int, MilkGoal> $milkGoals
+ * @property-read Collection<int, Achievement> $achievements
  */
 #[ObservedBy(BabyObserver::class)]
 final class Baby extends Model
@@ -62,5 +64,17 @@ final class Baby extends Model
     public function milkGoals(): HasMany
     {
         return $this->hasMany(MilkGoal::class);
+    }
+
+    /**
+     * @return BelongsToMany<Achievement, $this>
+     */
+    public function achievements(): BelongsToMany
+    {
+        return $this->belongsToMany(Achievement::class)
+            ->using(BabyAchievement::class)
+            ->as('link')
+            ->withPivot('uuid', 'achieved_at', 'note')
+            ->withTimestamps();
     }
 }
