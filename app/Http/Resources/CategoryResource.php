@@ -20,9 +20,6 @@ final class CategoryResource extends JsonResource
             'id' => $this->uuid,
             'name' => $this->name,
             'slug' => $this->slug,
-            'is_custom' => $this->is_custom,
-            'total_achievements' => $this->total_achievements,
-            'completed_achievements' => $this->completed_achievements,
         ];
     }
 }
