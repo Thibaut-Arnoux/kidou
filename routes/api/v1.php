@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\CategoryAchievementController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\MilkActivityController;
 use App\Http\Controllers\Api\V1\MilkGoalController;
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 // TODO: add auth:sanctum middleware once authorization is in place
 Route::middleware(InjectDemoBaby::class)->group(function (): void {
     Route::get('categories', [CategoryController::class, 'index'])->name('api.v1.categories.index');
+    Route::get('categories/{category}/achievements', [CategoryAchievementController::class, 'index'])->name('api.v1.categories.achievements.index');
     Route::get('milk-activity', MilkActivityController::class);
     Route::apiResource('milk-goals', MilkGoalController::class);
     Route::apiResource('milk-goals.measures', MilkMeasureController::class)->scoped();
