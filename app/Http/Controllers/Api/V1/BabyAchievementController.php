@@ -45,9 +45,7 @@ final readonly class BabyAchievementController
             ->where('achievement_id', $achievement->id)
             ->exists();
 
-        if ($existing) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, 'Achievement already linked to this baby.');
-        }
+        abort_if($existing, Response::HTTP_UNPROCESSABLE_ENTITY, 'Achievement already linked to this baby.');
 
         $link = $action->handle(
             baby: $baby,

@@ -37,7 +37,7 @@ it('filters baby achievements by category', function (): void {
     $this->baby->achievements()->attach($a1, ['note' => null]);
     $this->baby->achievements()->attach($a2, ['note' => null]);
 
-    $this->getJson("/api/v1/baby-achievements?category={$this->category->uuid}")
+    $this->getJson('/api/v1/baby-achievements?category='.$this->category->uuid)
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -129,7 +129,7 @@ it('updates a baby achievement note', function (): void {
     $this->baby->achievements()->attach($achievement, ['note' => 'Old note']);
     $link = BabyAchievement::query()->first();
 
-    $this->putJson("/api/v1/baby-achievements/{$link->uuid}", [
+    $this->putJson('/api/v1/baby-achievements/'.$link->uuid, [
         'note' => 'Updated note',
     ])
         ->assertOk()
@@ -146,7 +146,7 @@ it('clears a baby achievement note', function (): void {
     $this->baby->achievements()->attach($achievement, ['note' => 'Has note']);
     $link = BabyAchievement::query()->first();
 
-    $this->putJson("/api/v1/baby-achievements/{$link->uuid}", [
+    $this->putJson('/api/v1/baby-achievements/'.$link->uuid, [
         'note' => null,
     ])
         ->assertOk()
@@ -160,7 +160,7 @@ it('deletes a baby achievement', function (): void {
     $this->baby->achievements()->attach($achievement, ['note' => null]);
     $link = BabyAchievement::query()->first();
 
-    $this->deleteJson("/api/v1/baby-achievements/{$link->uuid}")
+    $this->deleteJson('/api/v1/baby-achievements/'.$link->uuid)
         ->assertNoContent();
 
     $this->assertDatabaseMissing('baby_achievement', ['id' => $link->id]);

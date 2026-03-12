@@ -34,7 +34,7 @@ it('filters achievements by category', function (): void {
     Achievement::factory()->count(2)->for($category1)->create();
     Achievement::factory()->count(3)->for($category2)->create();
 
-    $this->getJson("/api/v1/achievements?category={$category1->uuid}")
+    $this->getJson('/api/v1/achievements?category='.$category1->uuid)
         ->assertOk()
         ->assertJsonCount(2, 'data');
 });

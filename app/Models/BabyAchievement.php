@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 #[ObservedBy(BabyAchievementObserver::class)]
 final class BabyAchievement extends Pivot
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
+
     public $incrementing = true;
 
     protected $table = 'baby_achievement';
