@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AchievementController;
+use App\Http\Controllers\Api\V1\AchievementLinkController;
 use App\Http\Controllers\Api\V1\CategoryAchievementController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\MilkActivityController;
@@ -26,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
 Route::middleware(InjectDemoBaby::class)->group(function (): void {
     Route::post('achievements', [AchievementController::class, 'store'])->name('api.v1.achievements.store');
     Route::delete('achievements/{achievement}', [AchievementController::class, 'destroy'])->name('api.v1.achievements.destroy');
+    Route::post('achievements/{achievement}/link', [AchievementLinkController::class, 'store'])->name('api.v1.achievements.link.store');
+    Route::put('achievements/{achievement}/link', [AchievementLinkController::class, 'update'])->name('api.v1.achievements.link.update');
+    Route::delete('achievements/{achievement}/link', [AchievementLinkController::class, 'destroy'])->name('api.v1.achievements.link.destroy');
     Route::get('categories', [CategoryController::class, 'index'])->name('api.v1.categories.index');
     Route::get('categories/{category}/achievements', [CategoryAchievementController::class, 'index'])->name('api.v1.categories.achievements.index');
     Route::get('milk-activity', MilkActivityController::class);
