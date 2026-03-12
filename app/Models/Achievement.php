@@ -96,7 +96,7 @@ final class Achievement extends Model
      * @param  Builder<Achievement>  $query
      */
     #[Scope]
-    protected function predefined(Builder $query): void
+    public function predefined(Builder $query): void
     {
         $query->whereNull('user_id');
     }
@@ -105,7 +105,7 @@ final class Achievement extends Model
      * @param  Builder<Achievement>  $query
      */
     #[Scope]
-    protected function customForUser(Builder $query, User $user): void
+    public function customForUser(Builder $query, User $user): void
     {
         $query->where('user_id', $user->id);
     }
