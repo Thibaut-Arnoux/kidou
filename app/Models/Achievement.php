@@ -85,7 +85,7 @@ final class Achievement extends Model
      */
     public function babies(): BelongsToMany
     {
-        return $this->belongsToMany(Baby::class)
+        return $this->belongsToMany(Baby::class, 'baby_achievement')
             ->using(BabyAchievement::class)
             ->as('link')
             ->withPivot('uuid', 'achieved_at', 'note')
