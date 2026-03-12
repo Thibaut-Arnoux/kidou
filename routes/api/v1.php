@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\V1\AchievementController;
-use App\Http\Controllers\Api\V1\AchievementLinkController;
-use App\Http\Controllers\Api\V1\CategoryAchievementController;
-use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\BabyAchievementController;
+use App\Http\Controllers\Api\V1\ListAchievementController;
+use App\Http\Controllers\Api\V1\ListCategoryController;
 use App\Http\Controllers\Api\V1\MilkActivityController;
 use App\Http\Controllers\Api\V1\MilkGoalController;
 use App\Http\Controllers\Api\V1\MilkMeasureController;
@@ -25,13 +24,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
 // TODO: add auth:sanctum middleware once authorization is in place
 Route::middleware(InjectDemoBaby::class)->group(function (): void {
-    Route::post('achievements', [AchievementController::class, 'store'])->name('api.v1.achievements.store');
-    Route::delete('achievements/{achievement}', [AchievementController::class, 'destroy'])->name('api.v1.achievements.destroy');
-    Route::post('achievements/{achievement}/link', [AchievementLinkController::class, 'store'])->name('api.v1.achievements.link.store');
-    Route::put('achievements/{achievement}/link', [AchievementLinkController::class, 'update'])->name('api.v1.achievements.link.update');
-    Route::delete('achievements/{achievement}/link', [AchievementLinkController::class, 'destroy'])->name('api.v1.achievements.link.destroy');
-    Route::get('categories', [CategoryController::class, 'index'])->name('api.v1.categories.index');
-    Route::get('categories/{category}/achievements', [CategoryAchievementController::class, 'index'])->name('api.v1.categories.achievements.index');
+    Route::get('categories', ListCategoryController::class)->name('api.v1.categories.index');
+    Route::get('achievements', ListAchievementController::class)->name('api.v1.achievements.index');
+    Route::apiResource('baby-achievements', BabyAchievementController::class)->except(['show']);
     Route::get('milk-activity', MilkActivityController::class);
     Route::apiResource('milk-goals', MilkGoalController::class);
     Route::apiResource('milk-goals.measures', MilkMeasureController::class)->scoped();
