@@ -22,11 +22,11 @@ final readonly class ListCategories
                     /** @var \Illuminate\Database\Eloquent\Builder<\App\Models\Achievement> $query */
                     $query->where(function ($q) use ($user) {
                         $q->where(function ($inner) {
-                            $inner->whereHas('category', fn ($c) => $c->where('is_custom', false))
-                                ->whereNull('user_id');
+                            $inner->whereRaw('categories.is_custom = false')
+                                ->whereNull('achievements.user_id');
                         })->orWhere(function ($inner) use ($user) {
-                            $inner->whereHas('category', fn ($c) => $c->where('is_custom', true))
-                                ->where('user_id', $user->id);
+                            $inner->whereRaw('categories.is_custom = true')
+                                ->where('achievements.user_id', $user->id);
                         });
                     });
                 },
@@ -34,11 +34,11 @@ final readonly class ListCategories
                     /** @var \Illuminate\Database\Eloquent\Builder<\App\Models\Achievement> $query */
                     $query->where(function ($q) use ($user) {
                         $q->where(function ($inner) {
-                            $inner->whereHas('category', fn ($c) => $c->where('is_custom', false))
-                                ->whereNull('user_id');
+                            $inner->whereRaw('categories.is_custom = false')
+                                ->whereNull('achievements.user_id');
                         })->orWhere(function ($inner) use ($user) {
-                            $inner->whereHas('category', fn ($c) => $c->where('is_custom', true))
-                                ->where('user_id', $user->id);
+                            $inner->whereRaw('categories.is_custom = true')
+                                ->where('achievements.user_id', $user->id);
                         });
                     })->whereHas('babies', function ($q) use ($baby) {
                         $q->where('baby_achievement.baby_id', $baby->id);
