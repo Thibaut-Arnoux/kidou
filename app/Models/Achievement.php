@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property-read int $id
@@ -64,17 +63,5 @@ final class Achievement extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    /**
-     * @return BelongsToMany<Baby, $this>
-     */
-    public function babies(): BelongsToMany
-    {
-        return $this->belongsToMany(Baby::class, 'baby_achievement')
-            ->using(BabyAchievement::class)
-            ->as('link')
-            ->withPivot('uuid', 'note')
-            ->withTimestamps();
     }
 }

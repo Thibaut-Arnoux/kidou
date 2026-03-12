@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read Achievement $achievement
- * @property-read Baby $baby
  */
 #[ObservedBy(BabyAchievementObserver::class)]
 final class BabyAchievement extends Pivot
@@ -59,13 +58,5 @@ final class BabyAchievement extends Pivot
     public function achievement(): BelongsTo
     {
         return $this->belongsTo(Achievement::class);
-    }
-
-    /**
-     * @return BelongsTo<Baby, $this>
-     */
-    public function baby(): BelongsTo
-    {
-        return $this->belongsTo(Baby::class);
     }
 }

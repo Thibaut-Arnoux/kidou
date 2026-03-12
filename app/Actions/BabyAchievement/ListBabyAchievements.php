@@ -7,6 +7,7 @@ namespace App\Actions\BabyAchievement;
 use App\Models\Baby;
 use App\Models\BabyAchievement;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 final readonly class ListBabyAchievements
@@ -18,9 +19,9 @@ final readonly class ListBabyAchievements
     {
         return BabyAchievement::query()
             ->where('baby_id', $baby->id)
-            ->when($category, fn ($query) => $query->whereHas(
+            ->when($category, fn (Builder $query) => $query->whereHas(
                 'achievement',
-                fn ($q) => $q->where('category_id', $category->id),
+                fn (Builder $q) => $q->where('category_id', $category->id),
             ))
             ->with('achievement')
             ->orderBy('id')
