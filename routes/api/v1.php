@@ -24,10 +24,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
 // TODO: add auth:sanctum middleware once authorization is in place
 Route::middleware(InjectDemoBaby::class)->group(function (): void {
-    Route::get('categories', ListCategoryController::class)->name('api.v1.categories.index');
-    Route::get('achievements', ListAchievementController::class)->name('api.v1.achievements.index');
+    Route::get('categories', ListCategoryController::class)->name('categories.index');
+    Route::get('achievements', ListAchievementController::class)->name('achievements.index');
     Route::apiResource('baby-achievements', BabyAchievementController::class)->except(['show']);
-    Route::get('milk-activity', MilkActivityController::class);
+    Route::get('milk-activity', MilkActivityController::class)->name('milk-activity.index');
     Route::apiResource('milk-goals', MilkGoalController::class);
     Route::apiResource('milk-goals.measures', MilkMeasureController::class)->scoped();
 });
