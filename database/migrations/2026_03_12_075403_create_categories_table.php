@@ -18,7 +18,6 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->boolean('is_custom')->default(false);
             $table->timestamps();
         });
     }

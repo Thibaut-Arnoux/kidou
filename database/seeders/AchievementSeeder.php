@@ -89,7 +89,7 @@ final class AchievementSeeder extends Seeder
             foreach ($categoryAchievements as $achievement) {
                 Achievement::query()->firstOrCreate(
                     ['name' => $achievement['name'], 'category_id' => $category->id],
-                    [...$achievement, 'user_id' => null],
+                    $achievement,
                 );
             }
         }

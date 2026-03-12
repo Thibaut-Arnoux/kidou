@@ -18,7 +18,6 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->foreignId('baby_id')->constrained()->cascadeOnDelete();
             $table->foreignId('achievement_id')->constrained()->cascadeOnDelete();
-            $table->dateTime('achieved_at');
             $table->text('note')->nullable();
             $table->timestamps();
 

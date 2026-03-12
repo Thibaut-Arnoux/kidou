@@ -8,8 +8,6 @@ use App\Observers\AchievementObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\AchievementFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int $id
  * @property string $uuid
  * @property-read int $category_id
- * @property-read int|null $user_id
  * @property string $name
  * @property string|null $description
  * @property int|null $expected_age_min_months
@@ -27,8 +24,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read Category $category
- * @property-read User|null $user
- * @property-read BabyAchievement|null $babyLink
  */
 #[ObservedBy(AchievementObserver::class)]
 final class Achievement extends Model
@@ -39,7 +34,6 @@ final class Achievement extends Model
     /** @var list<string> */
     protected $fillable = [
         'category_id',
-        'user_id',
         'name',
         'description',
         'expected_age_min_months',
@@ -73,14 +67,6 @@ final class Achievement extends Model
     }
 
     /**
-     * @return BelongsTo<User, $this>
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
      * @return BelongsToMany<Baby, $this>
      */
     public function babies(): BelongsToMany
@@ -88,25 +74,7 @@ final class Achievement extends Model
         return $this->belongsToMany(Baby::class, 'baby_achievement')
             ->using(BabyAchievement::class)
             ->as('link')
-            ->withPivot('uuid', 'achieved_at', 'note')
+            ->withPivot('uuid', 'note')
             ->withTimestamps();
-    }
-
-    /**
-     * @param  Builder<Achievement>  $query
-     */
-    #[Scope]
-    public function predefined(Builder $query): void
-    {
-        $query->whereNull('user_id');
-    }
-
-    /**
-     * @param  Builder<Achievement>  $query
-     */
-    #[Scope]
-    public function customForUser(Builder $query, User $user): void
-    {
-        $query->where('user_id', $user->id);
     }
 }

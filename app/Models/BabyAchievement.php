@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Observers\BabyAchievementObserver;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
@@ -14,10 +15,11 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property string $uuid
  * @property-read int $baby_id
  * @property-read int $achievement_id
- * @property CarbonInterface $achieved_at
  * @property string|null $note
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read Achievement $achievement
+ * @property-read Baby $baby
  */
 #[ObservedBy(BabyAchievementObserver::class)]
 final class BabyAchievement extends Pivot
@@ -30,9 +32,13 @@ final class BabyAchievement extends Pivot
     protected $fillable = [
         'baby_id',
         'achievement_id',
-        'achieved_at',
         'note',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     /**
      * @return array<string, string>
@@ -42,9 +48,24 @@ final class BabyAchievement extends Pivot
         return [
             'baby_id' => 'integer',
             'achievement_id' => 'integer',
-            'achieved_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return BelongsTo<Achievement, $this>
+     */
+    public function achievement(): BelongsTo
+    {
+        return $this->belongsTo(Achievement::class);
+    }
+
+    /**
+     * @return BelongsTo<Baby, $this>
+     */
+    public function baby(): BelongsTo
+    {
+        return $this->belongsTo(Baby::class);
     }
 }

@@ -18,16 +18,6 @@ final class CategoryFactory extends Factory
         return [
             'name' => $name,
             'slug' => str($name)->slug()->toString(),
-            'is_custom' => false,
         ];
-    }
-
-    public function custom(): self
-    {
-        return $this->state(fn (array $attributes): array => [
-            'name' => 'Custom',
-            'slug' => 'custom',
-            'is_custom' => true,
-        ]);
     }
 }

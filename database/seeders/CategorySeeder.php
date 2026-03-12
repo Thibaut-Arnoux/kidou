@@ -12,12 +12,11 @@ final class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Motor Skills', 'slug' => 'motor-skills', 'is_custom' => false],
-            ['name' => 'Language', 'slug' => 'language', 'is_custom' => false],
-            ['name' => 'Social & Emotional', 'slug' => 'social-emotional', 'is_custom' => false],
-            ['name' => 'Cognitive', 'slug' => 'cognitive', 'is_custom' => false],
-            ['name' => 'Self-Care', 'slug' => 'self-care', 'is_custom' => false],
-            ['name' => 'Custom', 'slug' => 'custom', 'is_custom' => true],
+            ['name' => 'Motor Skills', 'slug' => 'motor-skills'],
+            ['name' => 'Language', 'slug' => 'language'],
+            ['name' => 'Social & Emotional', 'slug' => 'social-emotional'],
+            ['name' => 'Cognitive', 'slug' => 'cognitive'],
+            ['name' => 'Self-Care', 'slug' => 'self-care'],
         ];
 
         foreach ($categories as $category) {

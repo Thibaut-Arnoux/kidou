@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $uuid
  * @property string $name
  * @property string $slug
- * @property bool $is_custom
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read Collection<int, Achievement> $achievements
@@ -33,7 +32,6 @@ final class Category extends Model
     protected $fillable = [
         'name',
         'slug',
-        'is_custom',
     ];
 
     public function getRouteKeyName(): string
@@ -49,7 +47,6 @@ final class Category extends Model
         return [
             'name' => 'string',
             'slug' => 'string',
-            'is_custom' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

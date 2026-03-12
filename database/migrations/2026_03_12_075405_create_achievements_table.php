@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->unsignedInteger('expected_age_min_months')->nullable();
