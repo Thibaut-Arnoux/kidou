@@ -58,11 +58,7 @@ final class Achievement extends Model
     {
         return [
             'category_id' => 'integer',
-            'user_id' => 'integer',
             'name' => 'string',
-            'description' => 'string',
-            'expected_age_min_months' => 'integer',
-            'expected_age_max_months' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
