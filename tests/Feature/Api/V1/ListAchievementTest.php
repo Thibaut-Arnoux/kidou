@@ -22,6 +22,12 @@ it('lists all achievements', function (): void {
         ->assertJsonCount(3, 'data');
 });
 
+it('returns empty list when no achievements exist', function (): void {
+    $this->getJson('/api/v1/achievements')
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
+});
+
 it('filters achievements by category', function (): void {
     $category1 = Category::factory()->create();
     $category2 = Category::factory()->create();
