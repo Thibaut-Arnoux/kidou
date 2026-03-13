@@ -63,7 +63,7 @@ it('returns 422 for invalid category uuid', function (): void {
         ->assertUnprocessable();
 });
 
-it('returns 404 for non-existent category uuid', function (): void {
+it('returns 422 for non-existent category uuid', function (): void {
     $this->getJson('/api/v1/achievements?category='.fake()->uuid())
-        ->assertNotFound();
+        ->assertUnprocessable();
 });
