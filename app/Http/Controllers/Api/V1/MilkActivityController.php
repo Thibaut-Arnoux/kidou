@@ -14,7 +14,8 @@ final readonly class MilkActivityController
 {
     public function __invoke(MilkActivityRequest $request, Baby $baby, GetMilkActivity $action): MilkActivityCollection
     {
-        $period = $request->enum('period', Period::class) ?? Period::Week;
+        /** @var Period $period */
+        $period = $request->enum('period', Period::class);
 
         return new MilkActivityCollection($action->handle($baby, $period));
     }
