@@ -67,7 +67,7 @@ final class Baby extends Model
     }
 
     /**
-     * @return BelongsToMany<Achievement, $this>
+     * @return BelongsToMany<Achievement, $this, BabyAchievement, 'link'>
      */
     public function achievements(): BelongsToMany
     {
