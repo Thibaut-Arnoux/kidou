@@ -17,14 +17,18 @@ final readonly class ListBabyAchievements
      */
     public function handle(Baby $baby, ?Category $category = null): Collection
     {
-        return BabyAchievement::query()
+        $query = BabyAchievement::query()
             ->where('baby_id', $baby->id)
-            ->when($category, fn (Builder $query) => $query->whereHas(
+            ->with('achievement')
+            ->orderBy('id');
+
+        if ($category instanceof Category) {
+            $query->whereHas(
                 'achievement',
                 fn (Builder $q) => $q->where('category_id', $category->id),
-            ))
-            ->with('achievement')
-            ->orderBy('id')
-            ->get();
+            );
+        }
+
+        return $query->get();
     }
 }
