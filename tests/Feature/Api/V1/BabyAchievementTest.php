@@ -11,7 +11,6 @@ use App\Models\User;
 beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
-    app()->instance(Baby::class, $this->baby);
     $this->category = Category::factory()->create();
 });
 
@@ -24,7 +23,7 @@ it('lists all baby achievements', function (): void {
         $this->baby->achievements()->attach($achievement, ['note' => 'test']);
     }
 
-    $this->getJson('/api/v1/baby-achievements')
+    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements')
         ->assertOk()
         ->assertJsonCount(2, 'data');
 });
@@ -37,7 +36,7 @@ it('filters baby achievements by category', function (): void {
     $this->baby->achievements()->attach($a1, ['note' => null]);
     $this->baby->achievements()->attach($a2, ['note' => null]);
 
-    $this->getJson('/api/v1/baby-achievements?category='.$this->category->uuid)
+    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements?category='.$this->category->uuid)
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -48,7 +47,7 @@ it('returns baby achievement fields correctly', function (): void {
 
     $link = BabyAchievement::query()->first();
 
-    $this->getJson('/api/v1/baby-achievements')
+    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements')
         ->assertOk()
         ->assertJsonPath('data.0.id', $link->uuid)
         ->assertJsonPath('data.0.achievement_id', $achievement->uuid)
@@ -61,7 +60,7 @@ it('returns baby achievement fields correctly', function (): void {
 it('creates a baby achievement', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
 
-    $this->postJson('/api/v1/baby-achievements', [
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
         'achievement_id' => $achievement->uuid,
         'note' => 'During tummy time!',
     ])
@@ -79,7 +78,7 @@ it('creates a baby achievement', function (): void {
 it('creates a baby achievement without note', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
 
-    $this->postJson('/api/v1/baby-achievements', [
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
         'achievement_id' => $achievement->uuid,
     ])
         ->assertCreated()
@@ -90,9 +89,9 @@ it('creates a baby achievement with provided uuid', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
     $uuid = fake()->uuid();
 
-    $this->postJson('/api/v1/baby-achievements', [
-        'uuid' => $uuid,
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
         'achievement_id' => $achievement->uuid,
+        'uuid' => $uuid,
     ])
         ->assertCreated()
         ->assertJsonPath('data.id', $uuid);
@@ -102,22 +101,22 @@ it('prevents duplicate baby achievements for the same achievement', function ():
     $achievement = Achievement::factory()->for($this->category)->create();
     $this->baby->achievements()->attach($achievement, ['note' => null]);
 
-    $this->postJson('/api/v1/baby-achievements', [
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
         'achievement_id' => $achievement->uuid,
     ])
         ->assertUnprocessable();
 });
 
-it('validates required fields for creating baby achievement', function (): void {
-    $this->postJson('/api/v1/baby-achievements', [])
+it('returns 404 when storing with non-existent achievement', function (): void {
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
+        'achievement_id' => fake()->uuid(),
+    ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['achievement_id']);
 });
 
-it('validates achievement_id exists', function (): void {
-    $this->postJson('/api/v1/baby-achievements', [
-        'achievement_id' => fake()->uuid(),
-    ])
+it('validates achievement_id is required when storing', function (): void {
+    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['achievement_id']);
 });

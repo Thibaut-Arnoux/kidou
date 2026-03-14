@@ -12,7 +12,6 @@ beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
     $this->goal = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-15']);
-    app()->instance(Baby::class, $this->baby);
 });
 
 // --- Index ---
