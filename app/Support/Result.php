@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Support;
 
-final class Result
+final readonly class Result
 {
     private function __construct(
-        private readonly bool $ok,
-        private readonly mixed $val = null,
-        private readonly mixed $err = null,
+        private bool $ok,
+        private mixed $val = null,
+        private mixed $err = null,
     ) {}
 
     public static function ok(mixed $value = null): static
@@ -19,7 +19,7 @@ final class Result
 
     public static function err(mixed $error): static
     {
-        return new static(false, null, $error);
+        return new self(false, null, $error);
     }
 
     public function isOk(): bool
