@@ -33,10 +33,11 @@ final readonly class BabyAchievementController
 
     public function store(StoreBabyAchievementRequest $request, Baby $baby, CreateBabyAchievement $action): JsonResponse
     {
+        /** @var string $achievementId */
+        $achievementId = $request->validated('achievement_id');
+
         /** @var Achievement $achievement */
-        $achievement = Achievement::query()
-            ->where('uuid', $request->validated('achievement_id'))
-            ->first();
+        $achievement = Achievement::query()->where('uuid', $achievementId)->firstOrFail();
 
         /** @var string|null $note */
         $note = $request->validated('note');

@@ -14,8 +14,8 @@ final class StoreBabyAchievementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'uuid' => ['sometimes', 'uuid', 'unique:baby_achievement,uuid'],
             'achievement_id' => ['required', 'uuid', 'exists:achievements,uuid'],
+            'uuid' => ['sometimes', 'uuid', 'unique:baby_achievement,uuid'],
             'note' => ['nullable', 'string'],
         ];
     }
