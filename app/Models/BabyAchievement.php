@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Observers\BabyAchievementObserver;
 use Carbon\CarbonInterface;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -20,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property-read CarbonInterface $updated_at
  * @property-read Achievement $achievement
  */
-#[ObservedBy(BabyAchievementObserver::class)]
 final class BabyAchievement extends Pivot
 {
     use \Illuminate\Database\Eloquent\Factories\HasFactory;
