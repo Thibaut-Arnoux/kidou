@@ -13,7 +13,9 @@ final class CategoryFactory extends Factory
     /** @return array<string, mixed> */
     public function definition(): array
     {
-        $name = fake()->unique()->words(2, true);
+        /** @var list<string> $words */
+        $words = fake()->unique()->words(2);
+        $name = implode(' ', $words);
 
         return [
             'name' => $name,
