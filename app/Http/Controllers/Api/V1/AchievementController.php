@@ -10,9 +10,9 @@ use App\Http\Resources\AchievementResource;
 use App\Models\Category;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-final readonly class ListAchievementController
+final readonly class AchievementController
 {
-    public function __invoke(ListAchievementRequest $request, ListAchievements $action): AnonymousResourceCollection
+    public function index(ListAchievementRequest $request, ListAchievements $action): AnonymousResourceCollection
     {
         $category = $request->validated('category')
             ? Category::query()->where('uuid', $request->validated('category'))->first()
