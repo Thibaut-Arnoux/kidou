@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
+    $this->actingAs($this->user);
 });
 
 // --- Index ---
@@ -21,7 +22,7 @@ it('returns cursor-paginated list of goals', function (): void {
     // Another baby's goal should not appear
     MilkGoal::factory()->create(['date' => '2026-02-14']);
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals')
+    $this->getJson('/api/v1/milk-goals')
         ->assertSuccessful()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.date', '2026-02-15')
@@ -36,7 +37,7 @@ it('returns goals ordered by date descending', function (): void {
     MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-15']);
     MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-12']);
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals')
+    $this->getJson('/api/v1/milk-goals')
         ->assertSuccessful()
         ->assertJsonPath('data.0.date', '2026-02-15')
         ->assertJsonPath('data.1.date', '2026-02-12')
@@ -46,7 +47,7 @@ it('returns goals ordered by date descending', function (): void {
 // --- Store ---
 
 it('creates a new milk goal', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
         ->assertCreated()
         ->assertJsonPath('data.date', '2026-02-15')
         ->assertJsonPath('data.goal', 800);
@@ -61,7 +62,7 @@ it('creates a new milk goal', function (): void {
 it('stores a goal with a frontend-provided uuid', function (): void {
     $uuid = (string) Str::uuid();
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['uuid' => $uuid, 'date' => '2026-02-15', 'goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['uuid' => $uuid, 'date' => '2026-02-15', 'goal' => 800])
         ->assertCreated()
         ->assertJsonPath('data.id', $uuid);
 
@@ -69,7 +70,7 @@ it('stores a goal with a frontend-provided uuid', function (): void {
 });
 
 it('auto-generates a uuid when none is provided for goal', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
         ->assertCreated()
         ->assertJsonPath('data.id', fn (string $id) => Str::isUuid($id));
 });
@@ -77,25 +78,25 @@ it('auto-generates a uuid when none is provided for goal', function (): void {
 it('rejects a duplicate uuid when storing goal', function (): void {
     $existing = MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-14']);
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['uuid' => $existing->uuid, 'date' => '2026-02-15', 'goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['uuid' => $existing->uuid, 'date' => '2026-02-15', 'goal' => 800])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['uuid']);
 });
 
 it('validates date is required when storing', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['goal' => 800])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['date']);
 });
 
 it('validates goal is required when storing', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['date' => '2026-02-15'])
+    $this->postJson('/api/v1/milk-goals', ['date' => '2026-02-15'])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['goal']);
 });
 
 it('validates goal must be a positive integer when storing', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['date' => '2026-02-15', 'goal' => 0])
+    $this->postJson('/api/v1/milk-goals', ['date' => '2026-02-15', 'goal' => 0])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['goal']);
 });
@@ -103,7 +104,7 @@ it('validates goal must be a positive integer when storing', function (): void {
 it('validates date must be unique per baby when storing', function (): void {
     MilkGoal::factory()->for($this->baby)->create(['date' => '2026-02-15']);
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
+    $this->postJson('/api/v1/milk-goals', ['date' => '2026-02-15', 'goal' => 800])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['date']);
 });

@@ -11,24 +11,25 @@ use Illuminate\Support\Facades\Date;
 beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
+    $this->actingAs($this->user);
 });
 
 // --- Validation ---
 
 it('rejects request without period', function (): void {
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity')
+    $this->getJson('/api/v1/milk-activity')
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['period']);
 });
 
 it('rejects invalid period value', function (): void {
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=invalid')
+    $this->getJson('/api/v1/milk-activity?period=invalid')
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['period']);
 });
 
 it('rejects day as period', function (): void {
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=day')
+    $this->getJson('/api/v1/milk-activity?period=day')
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['period']);
 });
@@ -38,7 +39,7 @@ it('rejects day as period', function (): void {
 it('returns consistent envelope for all periods', function (string $period): void {
     Date::setTestNow('2026-02-24 12:00:00');
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period='.$period)
+    $this->getJson('/api/v1/milk-activity?period='.$period)
         ->assertSuccessful()
         ->assertJsonStructure([
             'data' => [['date', 'measure_value', 'measure_count', 'goal_value']],
@@ -63,7 +64,7 @@ it('returns aggregated daily data for week period', function (): void {
         'measured_at' => '2026-02-20 14:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=week')
+    $response = $this->getJson('/api/v1/milk-activity?period=week')
         ->assertSuccessful();
 
     $data = $response->json('data');
@@ -91,7 +92,7 @@ it('returns aggregated daily data for month period', function (): void {
         'measured_at' => '2026-02-01 09:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=month')
+    $response = $this->getJson('/api/v1/milk-activity?period=month')
         ->assertSuccessful();
 
     $data = $response->json('data');
@@ -119,7 +120,7 @@ it('returns aggregated monthly data for year period', function (): void {
         'measured_at' => '2026-01-20 10:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=year')
+    $response = $this->getJson('/api/v1/milk-activity?period=year')
         ->assertSuccessful();
 
     $data = $response->json('data');
@@ -142,7 +143,7 @@ it('returns aggregated monthly data for year period', function (): void {
 it('returns zero summary when no measures exist', function (): void {
     Date::setTestNow('2026-02-24 12:00:00');
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=week')
+    $response = $this->getJson('/api/v1/milk-activity?period=week')
         ->assertSuccessful();
 
     $data = $response->json('data');
@@ -170,7 +171,7 @@ it('reports goal reached when measure total meets goal', function (): void {
         'measured_at' => '2026-02-20 10:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=week')
+    $response = $this->getJson('/api/v1/milk-activity?period=week')
         ->assertSuccessful();
 
     $response->assertJsonPath('meta.goal_count', 1);
@@ -188,7 +189,7 @@ it('reports goal not reached when measure total is below goal', function (): voi
         'measured_at' => '2026-02-20 10:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=week')
+    $response = $this->getJson('/api/v1/milk-activity?period=week')
         ->assertSuccessful();
 
     $response->assertJsonPath('meta.goal_count', 1);
@@ -211,7 +212,7 @@ it('computes correct goal reached rate with mixed results', function (): void {
         'measured_at' => '2026-02-21 10:00:00',
     ]);
 
-    $response = $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/milk-activity?period=week')
+    $response = $this->getJson('/api/v1/milk-activity?period=week')
         ->assertSuccessful();
 
     $response->assertJsonPath('meta.goal_count', 2);
