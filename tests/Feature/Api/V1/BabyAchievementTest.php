@@ -163,7 +163,7 @@ it('forbids updating another user baby achievement', function (): void {
     $otherBaby = Baby::factory()->for($otherUser)->create();
     $achievement = Achievement::factory()->for($this->category)->create();
     $otherBaby->achievements()->attach($achievement, ['note' => 'other']);
-    $link = BabyAchievement::query()->first();
+    $link = BabyAchievement::query()->where('baby_id', $otherBaby->id)->firstOrFail();
 
     $this->putJson('/api/v1/baby-achievements/'.$link->uuid, ['note' => 'hacked'])
         ->assertForbidden();
@@ -174,7 +174,7 @@ it('forbids deleting another user baby achievement', function (): void {
     $otherBaby = Baby::factory()->for($otherUser)->create();
     $achievement = Achievement::factory()->for($this->category)->create();
     $otherBaby->achievements()->attach($achievement, ['note' => null]);
-    $link = BabyAchievement::query()->first();
+    $link = BabyAchievement::query()->where('baby_id', $otherBaby->id)->firstOrFail();
 
     $this->deleteJson('/api/v1/baby-achievements/'.$link->uuid)
         ->assertForbidden();
