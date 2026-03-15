@@ -18,6 +18,7 @@ use App\Models\BabyAchievement;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class BabyAchievementController
@@ -31,13 +32,8 @@ final readonly class BabyAchievementController
         return BabyAchievementResource::collection($action->handle($baby, $category));
     }
 
-    public function store(StoreBabyAchievementRequest $request, Baby $baby, CreateBabyAchievement $action): JsonResponse
+    public function store(StoreBabyAchievementRequest $request, Achievement $achievement, Baby $baby, CreateBabyAchievement $action): JsonResponse
     {
-        /** @var Achievement $achievement */
-        $achievement = Achievement::query()
-            ->where('uuid', $request->validated('achievement_id'))
-            ->first();
-
         /** @var string|null $note */
         $note = $request->validated('note');
 
@@ -67,6 +63,8 @@ final readonly class BabyAchievementController
         BabyAchievement $babyAchievement,
         UpdateBabyAchievementAction $action,
     ): BabyAchievementResource {
+        Gate::authorize('update', $babyAchievement);
+
         $action->handle($babyAchievement, $request->validated());
 
         return BabyAchievementResource::make($babyAchievement->load('achievement'));
@@ -74,6 +72,8 @@ final readonly class BabyAchievementController
 
     public function destroy(BabyAchievement $babyAchievement, DeleteBabyAchievement $action): Response
     {
+        Gate::authorize('delete', $babyAchievement);
+
         $action->handle($babyAchievement);
 
         return response()->noContent();

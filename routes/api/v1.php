@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\AchievementCategoryController;
+use App\Http\Controllers\Api\V1\AchievementController;
 use App\Http\Controllers\Api\V1\BabyAchievementController;
-use App\Http\Controllers\Api\V1\ListAchievementController;
-use App\Http\Controllers\Api\V1\ListCategoryController;
 use App\Http\Controllers\Api\V1\MilkActivityController;
 use App\Http\Controllers\Api\V1\MilkGoalController;
 use App\Http\Controllers\Api\V1\MilkMeasureController;
-use App\Http\Middleware\InjectDemoBaby;
+use App\Http\Controllers\Api\V1\StoreBabyController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,14 +20,29 @@ Route::get('/health', fn (): JsonResponse => response()->json([
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request): mixed => $request->user())->name('api.v1.user');
+
+    Route::post('babies', StoreBabyController::class)->name('babies.store');
 });
 
-// TODO: add auth:sanctum middleware once authorization is in place
-Route::middleware(InjectDemoBaby::class)->group(function (): void {
-    Route::get('categories', ListCategoryController::class)->name('categories.index');
-    Route::get('achievements', ListAchievementController::class)->name('achievements.index');
-    Route::apiResource('baby-achievements', BabyAchievementController::class)->except(['show']);
+// TODO: Restore 'auth:sanctum' middleware once authentication is properly set up.
+Route::middleware(['resolve.active.baby'])->group(function (): void {
+    // Achievement categories & achievements (read-only)
+    Route::apiResource('achievement-categories', AchievementCategoryController::class)
+        ->only(['index']);
+
+    Route::apiResource('achievements', AchievementController::class)
+        ->only(['index']);
+
+    // Baby achievements
+    Route::post('baby-achievements/{achievement}', [BabyAchievementController::class, 'store'])
+        ->name('baby-achievements.store');
+
+    Route::apiResource('baby-achievements', BabyAchievementController::class)
+        ->only(['index', 'update', 'destroy']);
+
+    // Milk tracking
     Route::get('milk-activity', MilkActivityController::class)->name('milk-activity.index');
+
     Route::apiResource('milk-goals', MilkGoalController::class);
     Route::apiResource('milk-goals.measures', MilkMeasureController::class)->scoped();
 });

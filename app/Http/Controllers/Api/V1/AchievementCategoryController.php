@@ -8,9 +8,9 @@ use App\Actions\Category\ListCategories;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-final readonly class ListCategoryController
+final readonly class AchievementCategoryController
 {
-    public function __invoke(ListCategories $action): AnonymousResourceCollection
+    public function index(ListCategories $action): AnonymousResourceCollection
     {
         return CategoryResource::collection($action->handle());
     }

@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->throttleApi('api');
+
+        $middleware->alias([
+            'resolve.active.baby' => App\Http\Middleware\ResolveActiveBaby::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(fn (Request $request): bool => $request->is('api/*'));
