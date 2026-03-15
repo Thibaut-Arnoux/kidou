@@ -119,14 +119,60 @@ it('validates nickname max length when creating', function (): void {
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['nickname']);
 });
+
+it('prevents creating a second baby for the same user', function (): void {
+    Baby::factory()->for($this->user)->create();
+
+    $this->actingAs($this->user)
+        ->postJson('/api/v1/babies', ['nickname' => 'Second'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['user_id']);
+});
 ```
+
+Note: Add `use App\Models\Baby;` to the test file imports.
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `vendor/bin/sail artisan test --compact --filter=BabyTest`
 Expected: FAIL (route not found once old controller removed)
 
-- [ ] **Step 3: Create invokable StoreBabyController**
+- [ ] **Step 3: Update StoreBabyRequest — add unique user_id rule**
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\Api\V1;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+final class StoreBabyRequest extends FormRequest
+{
+    /**
+     * @return array<string, array<int, mixed>>
+     */
+    public function rules(): array
+    {
+        return [
+            'nickname' => ['required', 'string', 'max:255'],
+            'user_id' => [Rule::unique('babies')->where('user_id', $this->user()->id)],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['user_id' => $this->user()->id]);
+    }
+}
+```
+
+- [ ] **Step 4: Create invokable StoreBabyController**
 
 ```php
 <?php
@@ -161,11 +207,11 @@ final readonly class StoreBabyController
 }
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add app/Http/Controllers/Api/V1/StoreBabyController.php tests/Feature/Api/V1/BabyTest.php
-git commit -m "feat(baby): add invokable StoreBabyController and slim BabyTest to store-only"
+git add app/Http/Controllers/Api/V1/StoreBabyController.php app/Http/Requests/Api/V1/StoreBabyRequest.php tests/Feature/Api/V1/BabyTest.php
+git commit -m "feat(baby): add invokable StoreBabyController with single-baby-per-user guard"
 ```
 
 ---
