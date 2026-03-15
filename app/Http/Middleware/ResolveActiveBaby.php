@@ -16,10 +16,14 @@ final readonly class ResolveActiveBaby
      */
     public function handle(Request $request, Closure $next): Response
     {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
+        // TODO: Restore user-specific baby resolution once authentication is properly set up.
+        // /** @var \App\Models\User $user */
+        // $user = $request->user();
+        // $baby = $user->babies()->first();
 
-        $baby = $user->babies()->first();
+        // TODO: Remove this temporary workaround — always injects the first baby in the database
+        // regardless of the authenticated user, for development purposes only.
+        $baby = Baby::query()->first();
 
         if (! $baby) {
             return response()->json(['message' => 'No active baby profile'], Response::HTTP_FORBIDDEN);

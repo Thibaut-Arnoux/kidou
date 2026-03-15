@@ -24,7 +24,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('babies', StoreBabyController::class)->name('babies.store');
 });
 
-Route::middleware(['auth:sanctum', 'resolve.active.baby'])->group(function (): void {
+// TODO: Restore 'auth:sanctum' middleware once authentication is properly set up.
+Route::middleware(['resolve.active.baby'])->group(function (): void {
     // Achievement categories & achievements (read-only)
     Route::apiResource('achievement-categories', AchievementCategoryController::class)
         ->only(['index']);
