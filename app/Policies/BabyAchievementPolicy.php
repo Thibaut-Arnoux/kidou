@@ -13,7 +13,7 @@ final readonly class BabyAchievementPolicy
     public function update(User $user, BabyAchievement $babyAchievement): bool
     {
         /** @var Baby $baby */
-        $baby = app(Baby::class);
+        $baby = resolve(Baby::class);
 
         return $baby->id === $babyAchievement->baby_id;
     }
@@ -21,7 +21,7 @@ final readonly class BabyAchievementPolicy
     public function delete(User $user, BabyAchievement $babyAchievement): bool
     {
         /** @var Baby $baby */
-        $baby = app(Baby::class);
+        $baby = resolve(Baby::class);
 
         return $baby->id === $babyAchievement->baby_id;
     }
