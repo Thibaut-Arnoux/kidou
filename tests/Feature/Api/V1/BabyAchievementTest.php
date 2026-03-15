@@ -155,3 +155,27 @@ it('returns 404 when deleting non-existent baby achievement', function (): void 
     $this->deleteJson('/api/v1/baby-achievements/'.fake()->uuid())
         ->assertNotFound();
 });
+
+// --- Authorization ---
+
+it('forbids updating another user baby achievement', function (): void {
+    $otherUser = User::factory()->create();
+    $otherBaby = Baby::factory()->for($otherUser)->create();
+    $achievement = Achievement::factory()->for($this->category)->create();
+    $otherBaby->achievements()->attach($achievement, ['note' => 'other']);
+    $link = BabyAchievement::query()->first();
+
+    $this->putJson('/api/v1/baby-achievements/'.$link->uuid, ['note' => 'hacked'])
+        ->assertForbidden();
+});
+
+it('forbids deleting another user baby achievement', function (): void {
+    $otherUser = User::factory()->create();
+    $otherBaby = Baby::factory()->for($otherUser)->create();
+    $achievement = Achievement::factory()->for($this->category)->create();
+    $otherBaby->achievements()->attach($achievement, ['note' => null]);
+    $link = BabyAchievement::query()->first();
+
+    $this->deleteJson('/api/v1/baby-achievements/'.$link->uuid)
+        ->assertForbidden();
+});
