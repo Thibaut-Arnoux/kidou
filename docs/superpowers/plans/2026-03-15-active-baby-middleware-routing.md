@@ -881,7 +881,110 @@ git commit -m "test(milk): update tests for flat routes with active baby middlew
 
 ---
 
-### Task 11: Delete unused files
+### Task 11: Add `BabyAchievementPolicy` for shallow route authorization
+
+**Files:**
+- Create: `app/Policies/BabyAchievementPolicy.php`
+- Modify: `app/Http/Controllers/Api/V1/BabyAchievementController.php`
+- Modify: `tests/Feature/Api/V1/BabyAchievementTest.php`
+
+- [ ] **Step 1: Write failing tests for authorization**
+
+Add these tests to `tests/Feature/Api/V1/BabyAchievementTest.php`:
+
+```php
+// --- Authorization ---
+
+it('forbids updating another user baby achievement', function (): void {
+    $otherUser = User::factory()->create();
+    $otherBaby = Baby::factory()->for($otherUser)->create();
+    $achievement = Achievement::factory()->for($this->category)->create();
+    $otherBaby->achievements()->attach($achievement, ['note' => 'other']);
+    $link = BabyAchievement::query()->first();
+
+    $this->putJson('/api/v1/baby-achievements/'.$link->uuid, ['note' => 'hacked'])
+        ->assertForbidden();
+});
+
+it('forbids deleting another user baby achievement', function (): void {
+    $otherUser = User::factory()->create();
+    $otherBaby = Baby::factory()->for($otherUser)->create();
+    $achievement = Achievement::factory()->for($this->category)->create();
+    $otherBaby->achievements()->attach($achievement, ['note' => null]);
+    $link = BabyAchievement::query()->first();
+
+    $this->deleteJson('/api/v1/baby-achievements/'.$link->uuid)
+        ->assertForbidden();
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `vendor/bin/sail artisan test --compact --filter="forbids"`
+Expected: FAIL (currently returns 200/204 instead of 403)
+
+- [ ] **Step 3: Create BabyAchievementPolicy**
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Policies;
+
+use App\Models\Baby;
+use App\Models\BabyAchievement;
+use App\Models\User;
+
+final readonly class BabyAchievementPolicy
+{
+    public function update(User $user, BabyAchievement $babyAchievement): bool
+    {
+        /** @var Baby $baby */
+        $baby = app(Baby::class);
+
+        return $baby->id === $babyAchievement->baby_id;
+    }
+
+    public function delete(User $user, BabyAchievement $babyAchievement): bool
+    {
+        /** @var Baby $baby */
+        $baby = app(Baby::class);
+
+        return $baby->id === $babyAchievement->baby_id;
+    }
+}
+```
+
+- [ ] **Step 4: Add `authorize` calls in BabyAchievementController**
+
+In the `update` method, add before the action call:
+```php
+Gate::authorize('update', $babyAchievement);
+```
+
+In the `destroy` method, add before the action call:
+```php
+Gate::authorize('delete', $babyAchievement);
+```
+
+Add `use Illuminate\Support\Facades\Gate;` to the imports.
+
+- [ ] **Step 5: Run tests to verify they pass**
+
+Run: `vendor/bin/sail artisan test --compact --filter=BabyAchievementTest`
+Expected: ALL PASS
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add app/Policies/BabyAchievementPolicy.php app/Http/Controllers/Api/V1/BabyAchievementController.php tests/Feature/Api/V1/BabyAchievementTest.php
+git commit -m "feat(policy): add BabyAchievementPolicy to authorize update/destroy on shallow routes"
+```
+
+---
+
+### Task 12: Delete unused files
 
 **Files:**
 - Delete: `app/Http/Controllers/Api/V1/BabyController.php`
