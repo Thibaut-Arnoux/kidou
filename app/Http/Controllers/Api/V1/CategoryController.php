@@ -8,7 +8,7 @@ use App\Actions\Category\ListCategories;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-final readonly class AchievementCategoryController
+final readonly class CategoryController
 {
     public function index(ListCategories $action): AnonymousResourceCollection
     {

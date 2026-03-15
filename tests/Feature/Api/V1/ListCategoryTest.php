@@ -15,7 +15,7 @@ beforeEach(function (): void {
 it('lists all categories', function (): void {
     $categories = Category::factory()->count(3)->create();
 
-    $this->getJson('/api/v1/achievement-categories')
+    $this->getJson('/api/v1/categories')
         ->assertOk()
         ->assertJsonCount(3, 'data')
         ->assertJsonPath('data.0.id', $categories->first()->uuid)
@@ -24,7 +24,7 @@ it('lists all categories', function (): void {
 });
 
 it('returns empty list when no categories exist', function (): void {
-    $this->getJson('/api/v1/achievement-categories')
+    $this->getJson('/api/v1/categories')
         ->assertOk()
         ->assertJsonCount(0, 'data');
 });

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\V1\AchievementCategoryController;
 use App\Http\Controllers\Api\V1\AchievementController;
 use App\Http\Controllers\Api\V1\BabyAchievementController;
+use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\MilkActivityController;
 use App\Http\Controllers\Api\V1\MilkGoalController;
 use App\Http\Controllers\Api\V1\MilkMeasureController;
@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 // TODO: Restore 'auth:sanctum' middleware once authentication is properly set up.
 Route::middleware(['resolve.active.baby'])->group(function (): void {
     // Achievement categories & achievements (read-only)
-    Route::apiResource('achievement-categories', AchievementCategoryController::class)
+    Route::apiResource('categories', CategoryController::class)
         ->only(['index']);
 
     Route::apiResource('achievements', AchievementController::class)

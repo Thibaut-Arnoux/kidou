@@ -9,7 +9,7 @@ it('returns 403 when user has no baby profile', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->getJson('/api/v1/achievement-categories')
+        ->getJson('/api/v1/categories')
         ->assertForbidden()
         ->assertJsonPath('message', 'No active baby profile');
 });
@@ -19,6 +19,6 @@ it('allows access when user has a baby profile', function (): void {
     Baby::factory()->for($user)->create();
 
     $this->actingAs($user)
-        ->getJson('/api/v1/achievement-categories')
+        ->getJson('/api/v1/categories')
         ->assertOk();
 });
