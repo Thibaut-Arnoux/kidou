@@ -12,6 +12,7 @@ beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
     $this->category = Category::factory()->create();
+    $this->actingAs($this->user);
 });
 
 // --- Index ---
@@ -23,7 +24,7 @@ it('lists all baby achievements', function (): void {
         $this->baby->achievements()->attach($achievement, ['note' => 'test']);
     }
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements')
+    $this->getJson('/api/v1/baby-achievements')
         ->assertOk()
         ->assertJsonCount(2, 'data');
 });
@@ -36,7 +37,7 @@ it('filters baby achievements by category', function (): void {
     $this->baby->achievements()->attach($a1, ['note' => null]);
     $this->baby->achievements()->attach($a2, ['note' => null]);
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements?category='.$this->category->uuid)
+    $this->getJson('/api/v1/baby-achievements?category='.$this->category->uuid)
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -47,7 +48,7 @@ it('returns baby achievement fields correctly', function (): void {
 
     $link = BabyAchievement::query()->first();
 
-    $this->getJson('/api/v1/babies/'.$this->baby->uuid.'/achievements')
+    $this->getJson('/api/v1/baby-achievements')
         ->assertOk()
         ->assertJsonPath('data.0.id', $link->uuid)
         ->assertJsonPath('data.0.achievement_id', $achievement->uuid)
@@ -60,8 +61,7 @@ it('returns baby achievement fields correctly', function (): void {
 it('creates a baby achievement', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
-        'achievement_id' => $achievement->uuid,
+    $this->postJson('/api/v1/baby-achievements/'.$achievement->uuid, [
         'note' => 'During tummy time!',
     ])
         ->assertCreated()
@@ -78,9 +78,7 @@ it('creates a baby achievement', function (): void {
 it('creates a baby achievement without note', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
-        'achievement_id' => $achievement->uuid,
-    ])
+    $this->postJson('/api/v1/baby-achievements/'.$achievement->uuid)
         ->assertCreated()
         ->assertJsonPath('data.note', null);
 });
@@ -89,8 +87,7 @@ it('creates a baby achievement with provided uuid', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
     $uuid = fake()->uuid();
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
-        'achievement_id' => $achievement->uuid,
+    $this->postJson('/api/v1/baby-achievements/'.$achievement->uuid, [
         'uuid' => $uuid,
     ])
         ->assertCreated()
@@ -101,24 +98,13 @@ it('prevents duplicate baby achievements for the same achievement', function ():
     $achievement = Achievement::factory()->for($this->category)->create();
     $this->baby->achievements()->attach($achievement, ['note' => null]);
 
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
-        'achievement_id' => $achievement->uuid,
-    ])
+    $this->postJson('/api/v1/baby-achievements/'.$achievement->uuid)
         ->assertUnprocessable();
 });
 
 it('returns 404 when storing with non-existent achievement', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [
-        'achievement_id' => fake()->uuid(),
-    ])
-        ->assertUnprocessable()
-        ->assertJsonValidationErrors(['achievement_id']);
-});
-
-it('validates achievement_id is required when storing', function (): void {
-    $this->postJson('/api/v1/babies/'.$this->baby->uuid.'/achievements', [])
-        ->assertUnprocessable()
-        ->assertJsonValidationErrors(['achievement_id']);
+    $this->postJson('/api/v1/baby-achievements/'.fake()->uuid())
+        ->assertNotFound();
 });
 
 // --- Update ---
