@@ -20,7 +20,7 @@ final class StoreBabyRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation(): void
+    public function prepareForValidation(): void
     {
         $this->merge(['user_id' => $this->user()->id]);
     }
