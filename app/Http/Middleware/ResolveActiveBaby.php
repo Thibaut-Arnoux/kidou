@@ -6,15 +6,20 @@ namespace App\Http\Middleware;
 
 use App\Models\Baby;
 use Closure;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class ResolveActiveBaby
 {
-    public function handle(Request $request, Closure $next): Response|JsonResponse
+    /**
+     * @param  Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
     {
-        $baby = $request->user()->babies()->first();
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $baby = $user->babies()->first();
 
         if (! $baby) {
             return response()->json(['message' => 'No active baby profile'], Response::HTTP_FORBIDDEN);
