@@ -31,14 +31,8 @@ final readonly class BabyAchievementController
         return BabyAchievementResource::collection($action->handle($baby, $category));
     }
 
-    public function store(StoreBabyAchievementRequest $request, Baby $baby, CreateBabyAchievement $action): JsonResponse
+    public function store(StoreBabyAchievementRequest $request, Achievement $achievement, Baby $baby, CreateBabyAchievement $action): JsonResponse
     {
-        /** @var string $achievementId */
-        $achievementId = $request->validated('achievement_id');
-
-        /** @var Achievement $achievement */
-        $achievement = Achievement::query()->where('uuid', $achievementId)->firstOrFail();
-
         /** @var string|null $note */
         $note = $request->validated('note');
 
