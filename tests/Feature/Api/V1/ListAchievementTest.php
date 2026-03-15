@@ -10,7 +10,7 @@ use App\Models\User;
 beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->baby = Baby::factory()->for($this->user)->create();
-    app()->instance(Baby::class, $this->baby);
+    $this->actingAs($this->user);
 });
 
 it('lists all achievements', function (): void {
