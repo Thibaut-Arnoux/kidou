@@ -10,7 +10,10 @@ use App\Models\User;
 
 final readonly class BabyAchievementPolicy
 {
-    public function update(User $user, BabyAchievement $babyAchievement): bool
+    // TODO: Restore non-nullable `User $user` once authentication is properly set up.
+    // The nullable `?User` allows guest access while auth:sanctum is not enforced on these routes.
+    // When restoring auth, also add user ownership checks (e.g. $user->babies()->where('id', $baby->id)->exists()).
+    public function update(?User $user, BabyAchievement $babyAchievement): bool
     {
         /** @var Baby $baby */
         $baby = resolve(Baby::class);
@@ -18,7 +21,7 @@ final readonly class BabyAchievementPolicy
         return $baby->id === $babyAchievement->baby_id;
     }
 
-    public function delete(User $user, BabyAchievement $babyAchievement): bool
+    public function delete(?User $user, BabyAchievement $babyAchievement): bool
     {
         /** @var Baby $baby */
         $baby = resolve(Baby::class);
