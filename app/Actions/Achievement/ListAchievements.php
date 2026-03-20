@@ -19,7 +19,7 @@ final readonly class ListAchievements
         return Achievement::query()
             ->with('category')
             ->when($category, fn (Builder $query, Category $category) => $query->where('category_id', $category->id))
-            ->orderBy('id')
+            ->orderBy('expected_age_min_months')
             ->get();
     }
 }
