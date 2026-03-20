@@ -67,3 +67,16 @@ it('returns 422 for non-existent category uuid', function (): void {
     $this->getJson('/api/v1/achievements?category='.fake()->uuid())
         ->assertUnprocessable();
 });
+
+it('returns achievements ordered by expected_age_min_months ascending', function (): void {
+    $category = Category::factory()->create();
+    Achievement::factory()->for($category)->create(['expected_age_min_months' => 12]);
+    Achievement::factory()->for($category)->create(['expected_age_min_months' => 3]);
+    Achievement::factory()->for($category)->create(['expected_age_min_months' => 6]);
+
+    $response = $this->getJson('/api/v1/achievements')->assertOk();
+
+    expect($response->json('data.0.expected_age_min_months'))->toBe(3)
+        ->and($response->json('data.1.expected_age_min_months'))->toBe(6)
+        ->and($response->json('data.2.expected_age_min_months'))->toBe(12);
+});
