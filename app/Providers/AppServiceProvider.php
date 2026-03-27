@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Support\LimitOffsetPaginator;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,6 +25,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->bootModelsDefaults();
         $this->bootPasswordDefaults();
         $this->bootRateLimiting();
+        $this->bootPagination();
     }
 
     private function bootModelsDefaults(): void
@@ -40,5 +43,21 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $request): Limit => $request->user()
             ? Limit::perMinute(600)->by($request->user()->id)
             : Limit::perMinute(100)->by($request->ip()));
+    }
+
+    private function bootPagination(): void
+    {
+        Builder::macro('limitOffsetPaginate', function (int $defaultLimit = 20): LimitOffsetPaginator {
+            /** @var Builder $this */
+            $limit = request()->integer('limit', $defaultLimit);
+            $offset = request()->integer('offset', 0);
+
+            return new LimitOffsetPaginator(
+                data: (clone $this)->limit($limit)->offset($offset)->get(),
+                total: (clone $this)->count(),
+                limit: $limit,
+                offset: $offset,
+            );
+        });
     }
 }
