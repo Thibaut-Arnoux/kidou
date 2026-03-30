@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,12 +22,9 @@ final class StoreBabyRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var User $user */
-        $user = $this->user();
-
         return [
             'nickname' => ['required', 'string', 'max:255'],
-            'user_id' => [Rule::unique('babies')->where('user_id', $user->id)],
+            'user_id' => [Rule::unique('babies')->where('user_id', $this->integer('user_id'))],
         ];
     }
 }
