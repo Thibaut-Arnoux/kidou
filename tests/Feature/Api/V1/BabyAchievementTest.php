@@ -29,19 +29,6 @@ it('lists all baby achievements', function (): void {
         ->assertJsonCount(2, 'data');
 });
 
-it('filters baby achievements by category', function (): void {
-    $category2 = Category::factory()->create();
-    $a1 = Achievement::factory()->for($this->category)->create();
-    $a2 = Achievement::factory()->for($category2)->create();
-
-    $this->baby->achievements()->attach($a1, ['note' => null]);
-    $this->baby->achievements()->attach($a2, ['note' => null]);
-
-    $this->getJson('/api/v1/baby-achievements?category='.$this->category->uuid)
-        ->assertOk()
-        ->assertJsonCount(1, 'data');
-});
-
 it('returns baby achievement fields correctly', function (): void {
     $achievement = Achievement::factory()->for($this->category)->create();
     $this->baby->achievements()->attach($achievement, ['note' => 'Great job!']);

@@ -8,14 +8,12 @@ use App\Actions\BabyAchievement\CreateBabyAchievement;
 use App\Actions\BabyAchievement\DeleteBabyAchievement;
 use App\Actions\BabyAchievement\ListBabyAchievements;
 use App\Actions\BabyAchievement\UpdateBabyAchievement as UpdateBabyAchievementAction;
-use App\Http\Requests\Api\V1\ListBabyAchievementRequest;
 use App\Http\Requests\Api\V1\StoreBabyAchievementRequest;
 use App\Http\Requests\Api\V1\UpdateBabyAchievementRequest;
 use App\Http\Resources\BabyAchievementResource;
 use App\Models\Achievement;
 use App\Models\Baby;
 use App\Models\BabyAchievement;
-use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
@@ -23,13 +21,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class BabyAchievementController
 {
-    public function index(ListBabyAchievementRequest $request, Baby $baby, ListBabyAchievements $action): AnonymousResourceCollection
+    public function index(Baby $baby, ListBabyAchievements $action): AnonymousResourceCollection
     {
-        $category = $request->validated('category')
-            ? Category::query()->where('uuid', $request->validated('category'))->first()
-            : null;
-
-        return BabyAchievementResource::collection($action->handle($baby, $category));
+        return BabyAchievementResource::collection($action->handle($baby));
     }
 
     public function store(StoreBabyAchievementRequest $request, Achievement $achievement, Baby $baby, CreateBabyAchievement $action): JsonResponse
