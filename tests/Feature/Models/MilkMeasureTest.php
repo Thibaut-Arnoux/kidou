@@ -22,11 +22,11 @@ it('belongs to a milk goal', function (): void {
     expect($measure->milkGoal->id)->toBe($goal->id);
 });
 
-it('eager loads milk goal', function (): void {
+it('does not eager load milk goal', function (): void {
     $goal = MilkGoal::factory()->for(Baby::factory()->for(User::factory()))->create();
     MilkMeasure::factory()->for($goal, 'milkGoal')->create();
 
     $measure = MilkMeasure::query()->first();
 
-    expect($measure->relationLoaded('milkGoal'))->toBeTrue();
+    expect($measure->relationLoaded('milkGoal'))->toBeFalse();
 });

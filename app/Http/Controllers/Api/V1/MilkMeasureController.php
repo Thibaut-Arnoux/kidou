@@ -38,6 +38,7 @@ final readonly class MilkMeasureController
         $uuid = $request->validated('uuid');
 
         $measure = $action->handle($milkGoal, $value, Date::parse($measuredAt), $uuid);
+        $measure->setAttribute('milk_goal_uuid', $milkGoal->uuid);
 
         return MilkMeasureResource::make($measure)
             ->response()

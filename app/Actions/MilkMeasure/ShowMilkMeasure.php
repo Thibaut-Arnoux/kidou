@@ -10,6 +10,8 @@ final readonly class ShowMilkMeasure
 {
     public function handle(MilkMeasure $milkMeasure): MilkMeasure
     {
-        return $milkMeasure;
+        return MilkMeasure::query()
+            ->withAggregate('milkGoal', 'uuid')
+            ->findOrFail($milkMeasure->id);
     }
 }

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int $id
  * @property string $uuid
  * @property-read int $milk_goal_id
+ * @property-read string $milk_goal_uuid
  * @property int $value
  * @property CarbonInterface $measured_at
  * @property-read CarbonInterface $created_at
@@ -27,9 +28,6 @@ final class MilkMeasure extends Model
 {
     /** @use HasFactory<MilkMeasureFactory> */
     use HasFactory;
-
-    /** @var list<string> */
-    protected $with = ['milkGoal'];
 
     public function getRouteKeyName(): string
     {

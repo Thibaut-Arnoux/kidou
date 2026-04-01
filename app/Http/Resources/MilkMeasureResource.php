@@ -18,7 +18,7 @@ final class MilkMeasureResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
-            'milk_goal_id' => $this->milkGoal->uuid,
+            'milk_goal_id' => $this->milk_goal_uuid,
             'value' => $this->value,
             'measured_at' => $this->measured_at->toIso8601ZuluString(),
             'created_at' => $this->created_at->toIso8601ZuluString(),
