@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int $id
  * @property string $uuid
  * @property-read int $category_id
+ * @property-read string $category_uuid
  * @property string $name
  * @property string|null $description
  * @property int|null $expected_age_min_months

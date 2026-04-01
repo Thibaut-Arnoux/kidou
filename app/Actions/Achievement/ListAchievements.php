@@ -15,7 +15,7 @@ final readonly class ListAchievements
     public function handle(): Collection
     {
         return Achievement::query()
-            ->with('category')
+            ->withAggregate('category', 'uuid')
             ->orderBy('expected_age_min_months')
             ->get();
     }

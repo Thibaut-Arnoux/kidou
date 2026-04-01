@@ -18,7 +18,7 @@ final class AchievementResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
-            'category_id' => $this->category->uuid,
+            'category_id' => $this->category_uuid,
             'name' => $this->name,
             'description' => $this->description,
             'expected_age_min_months' => $this->expected_age_min_months,
