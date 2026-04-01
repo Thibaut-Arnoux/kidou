@@ -36,7 +36,7 @@ final readonly class GetMilkActivity
         $measureTrend = fn (): Trend => Trend::query(
             MilkMeasure::query()
                 ->whereIn('milk_goal_id', $milkGoalIds)
-                ->without('milkGoal')
+
         )
             ->dateColumn('measured_at')
             ->between(start: $from, end: $to)

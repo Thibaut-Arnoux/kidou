@@ -14,6 +14,6 @@ final readonly class ListMilkMeasures
      */
     public function handle(MilkGoal $milkGoal): Collection
     {
-        return $milkGoal->measures;
+        return $milkGoal->measures()->withAggregate('milkGoal', 'uuid')->get();
     }
 }

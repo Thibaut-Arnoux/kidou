@@ -12,6 +12,8 @@ final readonly class UpdateMilkMeasure
     {
         $milkMeasure->update(['value' => $value]);
 
-        return $milkMeasure;
+        return MilkMeasure::query()
+            ->withAggregate('milkGoal', 'uuid')
+            ->findOrFail($milkMeasure->id);
     }
 }

@@ -1,3 +1,13 @@
+## Commits
+
+- **Conventional Commits**: All commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification
+- Format: `<type>[optional scope]: <description>` — e.g. `feat(milk-tracking): add daily goal progress bar`
+- Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `style`, `test`, `perf`, `ci`, `build`, `revert`
+- Breaking changes: append `!` after type/scope — e.g. `refactor!: drop legacy API support`
+- Body and footer are optional; use when context is needed
+- **No Co-Authored-By**: Never add `Co-Authored-By` trailers to commits
+- **Atomic commits**: When multiple files are changed, group them into the smallest logical commits possible. Each commit should represent one coherent change (one fix, one feature, one refactor). Never bundle unrelated changes into a single commit.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
