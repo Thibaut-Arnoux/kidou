@@ -14,9 +14,8 @@ final readonly class CreateBabyAchievement
 {
     public function handle(Baby $baby, Achievement $achievement, ?string $note = null, ?string $uuid = null): Result
     {
-        $alreadyLinked = BabyAchievement::query()
-            ->where('baby_id', $baby->id)
-            ->where('achievement_id', $achievement->id)
+        $alreadyLinked = $baby->achievements()
+            ->wherePivot('achievement_id', $achievement->id)
             ->exists();
 
         if ($alreadyLinked) {
