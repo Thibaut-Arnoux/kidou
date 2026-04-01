@@ -18,7 +18,7 @@ final class BabyAchievementResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
-            'achievement_id' => $this->achievement->uuid,
+            'achievement_id' => $this->achievement_uuid,
             'note' => $this->note,
             'created_at' => $this->created_at->toIso8601ZuluString(),
         ];

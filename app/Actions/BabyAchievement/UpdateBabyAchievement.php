@@ -15,6 +15,8 @@ final readonly class UpdateBabyAchievement
     {
         $babyAchievement->update($data);
 
-        return $babyAchievement->refresh();
+        return BabyAchievement::query()
+            ->withAggregate('achievement', 'uuid')
+            ->findOrFail($babyAchievement->id);
     }
 }

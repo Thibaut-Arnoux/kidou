@@ -59,9 +59,7 @@ final readonly class BabyAchievementController
     ): BabyAchievementResource {
         Gate::authorize('update', $babyAchievement);
 
-        $action->handle($babyAchievement, $request->validated());
-
-        return BabyAchievementResource::make($babyAchievement->load('achievement'));
+        return BabyAchievementResource::make($action->handle($babyAchievement, $request->validated()));
     }
 
     public function destroy(BabyAchievement $babyAchievement, DeleteBabyAchievement $action): Response

@@ -30,7 +30,7 @@ final readonly class CreateBabyAchievement
 
         /** @var BabyAchievement */
         $babyAchievement = BabyAchievement::query()
-            ->with('achievement')
+            ->withAggregate('achievement', 'uuid')
             ->where('baby_id', $baby->id)
             ->where('achievement_id', $achievement->id)
             ->firstOrFail();

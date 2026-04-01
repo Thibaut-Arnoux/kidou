@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property string $uuid
  * @property-read int $baby_id
  * @property-read int $achievement_id
+ * @property-read string $achievement_uuid
  * @property string|null $note
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at

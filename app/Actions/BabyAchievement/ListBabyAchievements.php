@@ -17,7 +17,7 @@ final readonly class ListBabyAchievements
     {
         return BabyAchievement::query()
             ->where('baby_id', $baby->id)
-            ->with('achievement')
+            ->withAggregate('achievement', 'uuid')
             ->orderBy('id')
             ->get();
     }
